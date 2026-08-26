@@ -431,9 +431,9 @@ footer {
 }
 
 /* =========================
-         * RESPONSIVIDADE EXTRA
-         * ========================= */
-@media (max-width: 480px) {
+* RESPONSIVIDADE EXTRA
+* ========================= */
+@media (max-width: 490px) {
   .hero {
     padding: 2rem 0 3rem;
   }
@@ -445,6 +445,9 @@ footer {
   .whatsapp-header-btn {
     padding: 0.6rem 1rem;
     font-size: 0.8rem;
+  }
+  header .company-name {
+    display: none;
   }
 }
 
