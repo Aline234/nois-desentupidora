@@ -1,6 +1,6 @@
 // =========================
 // SCRIPTS DE INTERATIVIDADE LEVE
-// ========================= 
+// =========================
 
 // Animação de entrada ao rolar a página
 (function () {
@@ -31,3 +31,38 @@ document.addEventListener("DOMContentLoaded", function () {
     link.href = WHATSAPP_LINK;
   });
 });
+
+// =========================
+// BANNER DE COOKIES / LGPD
+// =========================
+(function () {
+  const STORAGE_KEY = "cookie_consent_nois";
+  const banner = document.getElementById("cookie-banner");
+  const btn = document.getElementById("cookie-accept");
+
+  if (!banner || !btn) return;
+
+  // Verifica se já aceitou
+  const hasConsented = localStorage.getItem(STORAGE_KEY);
+  if (hasConsented) {
+    banner.classList.add("hidden");
+    return;
+  }
+
+  // Mostra o banner após um pequeno delay
+  setTimeout(() => {
+    banner.classList.add("show");
+  }, 500);
+
+  // Botão "Entendi"
+  btn.addEventListener("click", function () {
+    localStorage.setItem(STORAGE_KEY, "true");
+    banner.classList.remove("show");
+    banner.classList.add("hidden");
+    // Pequeno delay para animação de saída antes de esconder completamente
+    setTimeout(() => {
+      banner.style.display = "none";
+    }, 350);
+  });
+})();
+

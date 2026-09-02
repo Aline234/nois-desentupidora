@@ -451,6 +451,167 @@ footer {
   }
 }
 
+/* =========================
+ * TERMOS / POLÍTICA DE PRIVACIDADE
+ * ========================= */
+.terms-content {
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.8;
+}
+.terms-block {
+  margin-bottom: 3rem;
+  padding-bottom: 2.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+.terms-block:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+.terms-block h1 {
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+  font-weight: 800;
+  color: var(--blue);
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+}
+.terms-meta {
+  font-size: 0.9rem;
+  color: var(--gray-600);
+  margin-bottom: 1.5rem;
+  display: block;
+}
+.terms-block h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--blue);
+  margin: 1.75rem 0 0.75rem;
+  padding-left: 0.75rem;
+  border-left: 3px solid var(--green);
+}
+.terms-block p {
+  color: #374151;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+.terms-block ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+  margin: 0.75rem 0 1rem;
+}
+.terms-block li {
+  color: #374151;
+  margin-bottom: 0.4rem;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+.terms-block li::marker {
+  color: var(--green);
+}
+
+/* =========================
+ * RESPONSIVIDADE TERMOS
+ * ========================= */
+@media (max-width: 640px) {
+  .terms-block h1 {
+    font-size: 1.5rem;
+  }
+  .terms-block h2 {
+    font-size: 1.1rem;
+  }
+  .terms-block p,
+  .terms-block li {
+    font-size: 0.95rem;
+  }
+  .section {
+    padding: 2.5rem 0;
+  }
+}
+
+/* =========================
+ * BANNER DE COOKIES / LGPD (FIXO NO RODAPÉ)
+ * ========================= */
+.cookie-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--white);
+  border-top: 1px solid #e5e7eb;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+  z-index: 1000;
+  padding: 1rem 1.25rem;
+  transform: translateY(100%);
+  transition: transform 0.35s ease, opacity 0.35s ease;
+  opacity: 0;
+}
+.cookie-banner.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+.cookie-banner.hidden {
+  display: none;
+}
+.cookie-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.cookie-text {
+  flex: 1;
+  min-width: 260px;
+  font-size: 0.9rem;
+  color: #374151;
+  line-height: 1.5;
+}
+.cookie-text strong {
+  color: var(--blue);
+}
+.cookie-text a {
+  color: var(--blue-light);
+  text-decoration: underline;
+  font-weight: 500;
+}
+.cookie-text a:hover {
+  color: var(--blue);
+}
+.cookie-btn {
+  background: var(--blue);
+  color: var(--white);
+  border: none;
+  padding: 0.65rem 1.4rem;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+  white-space: nowrap;
+}
+.cookie-btn:hover {
+  background: var(--blue-light);
+  transform: translateY(-1px);
+}
+.cookie-btn:focus-visible {
+  outline: 2px solid var(--blue-light);
+  outline-offset: 2px;
+}
+
+/* Ajuste para não ficar por cima do botão flutuante do WhatsApp */
+@media (max-width: 640px) {
+  .cookie-banner.show ~ .whatsapp-float,
+  .cookie-banner:not(.hidden) ~ .whatsapp-float {
+    bottom: calc(1.5rem + 90px);
+  }
+}
+.cookie-banner:not(.hidden) ~ .whatsapp-float {
+  bottom: calc(1.5rem + 80px);
+}
+
 /* Animação sutil de entrada */
 .fade-in {
   opacity: 0;
