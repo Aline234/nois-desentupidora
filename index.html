@@ -1,6 +1,10 @@
 <!doctype html>
 <html lang="pt-BR">
   <head>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+    
+
     <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-55MN7ZRV"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -54,10 +58,12 @@
           <span class="company-name">NÓIS Desentupidora</span>
         </div>
         <a
-          href="https://wa.me/5511950566792?text=Ol%C3%A1%2C%20preciso%20de%20um%20or%C3%A7amento%20gr%C3%A1tis%20para%20desentupimento.%20Podem%20me%20ajudar%3F"
+          href="#"
           target="_blank"
           rel="noopener noreferrer"
           class="whatsapp-header-btn"
+          id="botao-whatsapp"
+          style="display: none;"
         >
           <svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true">
             <path
@@ -86,10 +92,12 @@
             encanamento e esgoto rapidinho.
           </p>
           <a
-            href="https://wa.me/5511950566792?text=Ol%C3%A1%2C%20preciso%20de%20um%20or%C3%A7amento%20gr%C3%A1tis%20para%20desentupimento.%20Podem%20me%20ajudar%3F"
+            href="#"
             target="_blank"
             rel="noopener noreferrer"
             class="cta-primary"
+            id="botao-whatsapp"
+            style="display: none;"
           >
             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path
@@ -234,10 +242,12 @@
               compromisso.
             </div>
             <a
-              href="https://wa.me/5511950566792?text=Ol%C3%A1%2C%20gostaria%20de%20um%20or%C3%A7amento%20gr%C3%A1tis%20para%20desentupimento.%20Podem%20me%20ajudar%3F"
+              href="#"
               target="_blank"
               rel="noopener noreferrer"
               class="cta-secondary"
+              id="botao-whatsapp"
+              style="display: none;"
             >
               <svg
                 viewBox="0 0 24 24"
@@ -441,6 +451,23 @@
         ],
         "description": "NÓIS Desentupidora oferece serviços de desentupimento 24h: limpeza de esgoto, manutenção de caixa de gordura, limpeza de calha e caixa d'água. Orçamento grátis e preço justo."
       }
+    </script>
+
+    <!-- Widget Invisível do Turnstile -->
+    <div class="cf-turnstile" data-sitekey="0x4AAAAAAF70VTsOQ4Q-U5DH" data-callback="liberarBotao"></div>
+    <script>
+       function liberarBotao(token) {
+    // Procura o botão no teu site através do ID
+      const btn = document.getElementById('botao-whatsapp');
+    
+        if (btn) {
+      // 1. Injeta o link real do WhatsApp (ou telefone)
+          btn.href = "https://wa.me/5511950566792"; 
+      
+      // 2. Faz o botão aparecer na tela para o cliente
+          btn.style.display = "block";
+          }
+        }
     </script>
 
     <script src="./script.js"></script>
