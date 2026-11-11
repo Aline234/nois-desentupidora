@@ -445,16 +445,18 @@
 
     <!-- Widget Invisível do Turnstile -->
     <div class="cf-turnstile" data-sitekey="0x4AAAAAAF70VTsOQ4Q-U5DH" data-callback="liberarBotao"></div>
-    <script>
+  <script>
     function liberarBotao(token) {
       const botoes = document.querySelectorAll('.botao-protegido');
     
+      const linkWhatsApp = atob('aHR0cHM6Ly93YS5tZS81NTExOTUwNTY2Nzky');
+    
       botoes.forEach(function(btn) {
-        btn.href = "https://wa.me/5511950566792";
+        btn.href = linkWhatsApp;
         btn.style.removeProperty('display');
       });
     }
-</script>
+  </script>
 
     <script src="./script.js"></script>
   </body>
