@@ -1,6 +1,22 @@
 <!doctype html>
 <html lang="pt-BR">
   <head>
+    <script>
+      // Definidos antes do script assíncrono: callback oficial, sem turnstile.ready().
+      window.noisTurnstileState = 'loading';
+      window.onNoisTurnstileLoad = function () {
+        window.noisTurnstileState = 'ready';
+        window.dispatchEvent(new Event('nois:turnstile-load'));
+      };
+      window.onNoisTurnstileError = function () {
+        window.noisTurnstileState = 'error';
+        window.dispatchEvent(new Event('nois:turnstile-error'));
+      };
+    </script>
+    <script id="turnstile-api" src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&amp;onload=onNoisTurnstileLoad" async onerror="onNoisTurnstileError()"></script>
+
+    <!-- Consentimento básico: define denied antes de poder carregar o GTM. -->
+    <script src="./consent.js"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
@@ -42,11 +58,11 @@
           <img src="./imagens/logo.png" alt="NÓIS Desentupidora" />
           <span class="company-name">NÓIS Desentupidora</span>
         </div>
-        <a
-          href="https://wa.me/5511950566792?text=Ol%C3%A1%2C%20preciso%20de%20um%20or%C3%A7amento%20gr%C3%A1tis%20para%20desentupimento.%20Podem%20me%20ajudar%3F"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="whatsapp-header-btn"
+        <button
+          type="button"
+          class="whatsapp-header-btn botao-protegido"
+          id="botao-whatsapp-header"
+          aria-label="Falar no WhatsApp"
         >
           <svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true">
             <path
@@ -57,7 +73,7 @@
             />
           </svg>
           <span>WhatsApp</span>
-        </a>
+        </button>
       </div>
     </header>
 
@@ -85,7 +101,7 @@
                 Este site não possui formulário de contato, área de cadastro,
                 criação de conta, newsletter ou checkout. O contato com a empresa
                 é realizado principalmente por meio do botão de WhatsApp
-                disponibilizado no site.
+                disponibilizado no site, protegido por verificação de segurança.
               </p>
 
               <h2>1. Dados fornecidos pelo usuário</h2>
@@ -122,25 +138,19 @@
 
               <h2>3. Cookies, Analytics e ferramentas de rastreamento</h2>
               <p>
-                Atualmente, este site não utiliza Google Analytics, Meta Pixel,
-                cookies de marketing, cookies de análise ou outras ferramentas
-                próprias de rastreamento comportamental.
+                O site utiliza o Google Tag Manager para gerenciar ferramentas de
+                estatísticas e publicidade, incluindo mensuração do Google Ads.
+                As tags opcionais só são carregadas após a opção “Aceitar todos”.
               </p>
-
               <p>
-                O site poderá receber visitantes provenientes de campanhas do
-                Google Ads e poderá ser verificado e acompanhado por meio do
-                Google Search Console. A utilização desses serviços, sem a
-                instalação de tags adicionais de conversão, remarketing ou análise
-                no site, não altera a declaração acima sobre o uso de cookies pelo
-                próprio site.
+                Você pode recusar os cookies opcionais sem impedir o atendimento.
+                Sua escolha fica salva neste navegador. Para alterá-la ou revogá-la,
+                use “Preferências de cookies” no rodapé. A revogação recarrega a
+                página para interromper as tags opcionais já carregadas.
               </p>
-
               <p>
-                Caso sejam adicionadas futuramente tags de conversão,
-                remarketing, analytics ou outras tecnologias de rastreamento,
-                esta Política de Privacidade deverá ser atualizada antes ou no
-                momento da implementação.
+                A verificação de segurança Cloudflare Turnstile e o contato por
+                WhatsApp funcionam independentemente dessa escolha.
               </p>
 
               <h2>4. Dados técnicos de hospedagem e segurança</h2>
@@ -224,13 +234,14 @@
                 Este site possui caráter informativo e comercial. Seu objetivo é
                 apresentar os serviços oferecidos pela NÓIS Desentupidora, as
                 regiões atendidas, informações de contato e facilitar a
-                solicitação de atendimento por WhatsApp.
+                solicitação de atendimento por WhatsApp através de verificação de segurança.
               </p>
 
               <h2>2. Solicitação de atendimento</h2>
               <p>
                 O contato poderá ser realizado por meio do botão de WhatsApp
-                disponibilizado no site. O envio de uma mensagem não representa
+                disponibilizado no site, após verificação de segurança (Cloudflare Turnstile).
+                O envio de uma mensagem não representa
                 contratação automática de qualquer serviço.
               </p>
 
@@ -335,7 +346,7 @@
           <h3>NÓIS Desentupidora</h3>
           <div class="contact-info">
             <p>Desentupimento 24h — sua emergência é nossa prioridade!</p>
-            <a href="tel:+5511950566792">📞 (11) 950566792</a>
+            <a href="tel:+5511950566792">📞 (11) 95056-6792</a>
             <a href="mailto:noisdesentupidora@gmail.com"
               >✉ noisdesentupidora@gmail.com</a
             >
@@ -380,38 +391,43 @@
         <br />
         CNPJ: 58.249.605/0001-09 • SP
       </div>
+      <button id="cookie-preferences" class="cookie-settings-btn" type="button">Preferências de cookies</button>
     </footer>
 
     <!-- =========================
          BOTÃO FLUTUANTE WHATSAPP
          ========================= -->
-    <a
-      href="https://wa.me/5511950566792?text=Ol%C3%A1%2C%20preciso%20de%20ajuda%20com%20um%20desentupimento.%20Podem%20me%20ajudar%3F"
-      target="_blank"
-      rel="noopener"
-      class="whatsapp-float"
+    <button
+      type="button"
+      class="whatsapp-float botao-protegido"
       aria-label="Falar no WhatsApp"
+      id="botao-whatsapp-float"
     >
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
         <path
           d="M12.01 2.013C6.49 2.013 2 6.503 2 12.023c0 2.03.763 3.91 2.007 5.342l-1.08 3.969a1.333 1.333 0 0 0 1.635 1.655l3.63-2.74c1.15.303 2.364.48 3.426.48 5.518 0 9.987-4.49 9.987-9.986 0-2.67-.99-5.093-2.617-6.88C18.082 3.013 15.218 2.013 12.01 2.013z"
         />
       </svg>
-    </a>
+      <span class="pulse" aria-hidden="true"></span>
+    </button>
 
     <!-- =========================
      BANNER LGPD / COOKIES
      ========================= -->
   <div id="cookie-banner" class="cookie-banner" role="dialog" aria-label="Consentimento de cookies">
-    <div class="cookie-inner">
-      <p class="cookie-text">
-        Este site utiliza configurações básicas para melhorar sua experiência
-        de navegação. Consulte nossa
-        <a href="./termos.html">Política de Privacidade</a>.
-      </p>
-      <button id="cookie-accept" class="cookie-btn" type="button">Entendi</button>
+      <div class="cookie-inner">
+        <p class="cookie-text">
+          Cookies opcionais permitem estatísticas, medição de anúncios, uso de dados
+          para publicidade e anúncios personalizados. Você pode aceitar ou recusar;
+          o atendimento funciona sem esses cookies.
+          <a href="./termos.html">Política de Privacidade</a>.
+        </p>
+        <div class="cookie-actions">
+          <button id="cookie-reject" class="cookie-btn" type="button">Recusar opcionais</button>
+          <button id="cookie-accept" class="cookie-btn" type="button">Aceitar todos</button>
+        </div>
+      </div>
     </div>
-  </div>
 
   <script src="./script.js"></script>
 </body>

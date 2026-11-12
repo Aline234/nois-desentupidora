@@ -624,3 +624,376 @@ footer {
   opacity: 1;
   transform: none;
 }
+
+/* =========================
+ * MODAL DE PRÉ-QUALIFICAÇÃO
+ * ========================= */
+.qualification-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.qualification-modal.open {
+  opacity: 1;
+  visibility: visible;
+}
+.qualification-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+}
+.qualification-container {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  max-height: 90vh;
+  background: var(--white);
+  border-radius: 1.25rem;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: scale(0.95) translateY(20px);
+  transition: transform 0.3s ease;
+}
+.qualification-modal.open .qualification-container {
+  transform: scale(1) translateY(0);
+}
+.qualification-header {
+  padding: 1.5rem 1.5rem 1rem;
+  text-align: center;
+  border-bottom: 1px solid #e5e7eb;
+}
+.qualification-header h2 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--blue);
+  margin-bottom: 0.25rem;
+}
+.qualification-subtitle {
+  font-size: 0.9rem;
+  color: var(--gray-600);
+  margin-bottom: 1rem;
+}
+.qualification-progress {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.progress-bar {
+  flex: 1;
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green), var(--green-light));
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+.progress-text {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--gray-600);
+  white-space: nowrap;
+}
+.qualification-body {
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+}
+.qualification-body h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--blue);
+  margin-bottom: 0.25rem;
+}
+.step-subtitle {
+  font-size: 0.875rem;
+  color: var(--gray-600);
+  margin-bottom: 1.25rem;
+}
+
+/* Grid de opções */
+.options-grid {
+  display: grid;
+  gap: 0.75rem;
+}
+.option-btn {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.75rem;
+  background: var(--white);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  width: 100%;
+}
+.option-btn:hover {
+  border-color: var(--green-light);
+  background: #f0fdf4;
+}
+.option-btn:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+}
+.option-btn.selected {
+  border-color: var(--green);
+  background: #f0fdf4;
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
+}
+.option-label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--gray-800);
+  margin-bottom: 0.25rem;
+}
+.option-desc {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--gray-600);
+}
+.option-check {
+  flex-shrink: 0;
+  color: var(--green);
+  opacity: 0;
+  transform: scale(0.5);
+  transition: all 0.2s ease;
+}
+.option-btn.selected .option-check {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Input de bairro */
+.neighborhood-input-wrapper {
+  position: relative;
+}
+.neighborhood-input {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+.neighborhood-input:focus {
+  outline: none;
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
+}
+.neighborhood-input::placeholder {
+  color: var(--gray-600);
+}
+.suggestions-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--white);
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  box-shadow: var(--shadow-lg);
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
+}
+.suggestion-item {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--gray-800);
+  transition: background 0.15s ease;
+}
+.suggestion-item:hover,
+.suggestion-item:focus {
+  background: #f0fdf4;
+  outline: none;
+}
+.input-hint {
+  font-size: 0.75rem;
+  color: var(--gray-600);
+  margin-top: 0.5rem;
+}
+
+/* Turnstile */
+.turnstile-wrapper {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0;
+}
+.turnstile-notice {
+  font-size: 0.75rem;
+  color: var(--gray-600);
+  text-align: center;
+}
+
+/* Loading spinner */
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e5e7eb;
+  border-top-color: var(--green);
+  border-radius: 50%;
+  margin: 1.5rem auto;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Success animation */
+.success-animation {
+  display: flex;
+  justify-content: center;
+  margin: 1.5rem 0;
+}
+.success-animation svg {
+  animation: checkmark 0.5s ease forwards;
+}
+@keyframes checkmark {
+  0% { stroke-dashoffset: 100; opacity: 0; }
+  50% { opacity: 1; }
+  100% { stroke-dashoffset: 0; }
+}
+
+/* Botões do rodapé do modal */
+.qualification-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn-primary {
+  background: var(--blue);
+  color: var(--white);
+  flex: 1;
+}
+.btn-primary:not(:disabled):hover {
+  background: var(--blue-light);
+  transform: translateY(-1px);
+}
+.btn-secondary {
+  background: #f3f4f6;
+  color: var(--gray-800);
+  flex: 1;
+}
+.btn-secondary:not(:disabled):hover {
+  background: #e5e7eb;
+}
+.btn-whatsapp-final {
+  background: #25d366;
+  color: var(--white);
+  width: 100%;
+  padding: 1rem;
+  font-size: 1rem;
+}
+.btn-whatsapp-final:hover {
+  background: #128c76;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(37, 211, 104, 0.4);
+}
+.whatsapp-hint {
+  font-size: 0.75rem;
+  color: var(--gray-600);
+  text-align: center;
+  margin-top: 0.75rem;
+}
+.error-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+.error-actions .btn {
+  flex: 1;
+}
+
+/* Responsividade do modal */
+@media (max-width: 480px) {
+  .qualification-container {
+    max-height: 95vh;
+    border-radius: 1rem;
+  }
+  .qualification-header,
+  .qualification-body,
+  .qualification-footer {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  .option-btn {
+    padding: 0.875rem;
+  }
+  .btn {
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+  }
+}
+
+
+/* Controles do formulário com área de toque móvel. */
+.qualification-header { position: relative; }
+.qualification-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  background: transparent;
+  color: var(--blue);
+  font-size: 1.6rem;
+  cursor: pointer;
+}
+.qualification-header h2 { padding-inline: 1rem; }
+.qualification-close:focus-visible { outline: 2px solid var(--blue); outline-offset: -4px; }
+#whatsapp-fallback { margin-top: 0.75rem; width: 100%; text-align: center; }
+
+
+/* O mesmo banner de cookies, com escolha explícita e controles móveis. */
+.cookie-banner { max-height: 80vh; overflow-y: auto; }
+.cookie-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.cookie-actions .cookie-btn { min-height: 44px; }
+#cookie-reject { background: var(--gray-600, #4b5563); }
+.cookie-settings-btn {
+  border: 0; background: transparent; color: inherit;
+  text-decoration: underline; cursor: pointer; padding: 0.75rem;
+  font: inherit; min-height: 44px;
+}
+@media (max-width: 640px) {
+  .cookie-banner:not(.hidden) ~ .whatsapp-float { bottom: calc(1.5rem + var(--cookie-banner-height, 245px)); }
+  .cookie-actions { width: 100%; }
+  .cookie-actions .cookie-btn { flex: 1; }
+}

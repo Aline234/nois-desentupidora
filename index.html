@@ -1,19 +1,25 @@
 <!doctype html>
 <html lang="pt-BR">
   <head>
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-
-    
-
-    <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-55MN7ZRV"></script>
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+      // Definidos antes do script assíncrono: callback oficial, sem turnstile.ready().
+      window.noisTurnstileState = 'loading';
+      window.onNoisTurnstileLoad = function () {
+        window.noisTurnstileState = 'ready';
+        window.dispatchEvent(new Event('nois:turnstile-load'));
+      };
+      window.onNoisTurnstileError = function () {
+        window.noisTurnstileState = 'error';
+        window.dispatchEvent(new Event('nois:turnstile-error'));
+      };
     </script>
+    <script id="turnstile-api" src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&amp;onload=onNoisTurnstileLoad" async onerror="onNoisTurnstileError()"></script>
+
+    <!-- Consentimento básico: define denied antes de poder carregar o GTM. -->
+    <script src="./consent.js"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="NÓIS Desentupidora - Serviço de    desentupimento 24h. Orçamento grátis e preço justo. Atendemos emergências de esgoto, caixa de gordura, calha e caixa d'água. Ligue ou chame no WhatsApp agora!" />
+    <meta name="description" content="NÓIS Desentupidora - Serviço de desentupimento 24h. Orçamento grátis e preço justo. Atendemos emergências de esgoto, caixa de gordura, calha e caixa d'água. Ligue ou chame no WhatsApp agora!" />
 
     <!-- Open Graph -->
     <meta property="og:title" content="NÓIS Desentupidora - Desentupimento 24h Rápido e Garantido" />
@@ -45,13 +51,11 @@
           <img src="./imagens/logo.png" alt="NÓIS Desentupidora" />
           <span class="company-name">NÓIS Desentupidora</span>
         </div>
-        <a
-          href="#"
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          type="button"
           class="whatsapp-header-btn botao-protegido"
-          id="botao-whatsapp"
-          style="display: none;"
+          id="botao-whatsapp-header"
+          aria-label="Falar no WhatsApp"
         >
           <svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true">
             <path
@@ -62,7 +66,7 @@
             />
           </svg>
           <span>WhatsApp</span>
-        </a>
+        </button>
       </div>
     </header>
 
@@ -79,13 +83,11 @@
             Orçamento Grátis e Preço Justo. Resolvemos sua emergência de
             encanamento e esgoto rapidinho.
           </p>
-          <a
-            href="#"
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            type="button"
             class="cta-primary botao-protegido"
-            id="botao-whatsapp"
-            style="display: none;"
+            id="botao-whatsapp-hero"
+            aria-label="Chamar no WhatsApp"
           >
             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path
@@ -94,7 +96,7 @@
               <path d="M12 6v6h6l-6-6z" />
             </svg>
             Chamar no WhatsApp
-          </a>
+          </button>
         </div>
       </section>
 
@@ -111,7 +113,7 @@
         </div>
 
         <div class="services-grid container">
-          <article class="service-card">
+          <article class="service-card" id="servico1">
             <div class="service-icon">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -138,7 +140,7 @@
             </p>
           </article>
 
-          <article class="service-card">
+          <article class="service-card" id="servico2">
             <div class="service-icon">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -164,7 +166,7 @@
             </p>
           </article>
 
-          <article class="service-card">
+          <article class="service-card" id="servico3">
             <div class="service-icon">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -193,7 +195,7 @@
       <!-- =========================
              DIFERENCIAIS / PREÇO
              ========================= -->
-      <section class="section-sm differentials fade-in">
+      <section class="section-sm differentials fade-in" id="preco">
         <div class="container">
           <h2>Por que escolher a NÓIS Desentupidora?</h2>
           <p style="max-width: 640px; margin: 0 auto 2rem; opacity: 0.95">
@@ -229,13 +231,11 @@
               Preço para desentupimento básico. Orçamento grátis e sem
               compromisso.
             </div>
-            <a
-              href="#"
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              type="button"
               class="cta-secondary botao-protegido"
-              id="botao-whatsapp"
-              style="display: none;"
+              id="botao-whatsapp-preco"
+              aria-label="Ver preços por WhatsApp"
             >
               <svg
                 viewBox="0 0 24 24"
@@ -249,7 +249,7 @@
                 />
               </svg>
               Ver preços por WhatsApp
-            </a>
+            </button>
           </div>
         </div>
       </section>
@@ -264,7 +264,7 @@
           <h3>NÓIS Desentupidora</h3>
           <div class="contact-info">
             <p>Desentupimento 24h — sua emergência é nossa prioridade!</p>
-            <a href="tel:+5511950566792">📞 (11) 950566792</a>
+            <a href="tel:+5511950566792">📞 (11) 95056-6792</a>
             <a href="mailto:noisdesentupidora@gmail.com"
               >✉ noisdesentupidora@gmail.com</a
             >
@@ -320,47 +320,43 @@
         <br />
         CNPJ: 58.249.605/0001-09 • SP
       </div>
+      <button id="cookie-preferences" class="cookie-settings-btn" type="button">Preferências de cookies</button>
     </footer>
 
     <!-- =========================
          BANNER LGPD / COOKIES
          ========================= -->
-    <div
-      id="cookie-banner"
-      class="cookie-banner"
-      role="dialog"
-      aria-label="Consentimento de cookies"
-    >
+    <div id="cookie-banner" class="cookie-banner" role="dialog" aria-label="Consentimento de cookies">
       <div class="cookie-inner">
         <p class="cookie-text">
-          Este site utiliza configurações básicas para melhorar sua experiência
-          de navegação. Consulte nossa
+          Cookies opcionais permitem estatísticas, medição de anúncios, uso de dados
+          para publicidade e anúncios personalizados. Você pode aceitar ou recusar;
+          o atendimento funciona sem esses cookies.
           <a href="./termos.html">Política de Privacidade</a>.
         </p>
-        <button id="cookie-accept" class="cookie-btn" type="button">
-          Entendi
-        </button>
+        <div class="cookie-actions">
+          <button id="cookie-reject" class="cookie-btn" type="button">Recusar opcionais</button>
+          <button id="cookie-accept" class="cookie-btn" type="button">Aceitar todos</button>
+        </div>
       </div>
     </div>
 
     <!-- =========================
          BOTÃO FLUTUANTE WHATSAPP
          ========================= -->
-    <a
-      href="#"
-      target="_blank"
-      rel="noopener"
+    <button
+      type="button"
       class="whatsapp-float botao-protegido"
       aria-label="Falar no WhatsApp"
-      id="botao-whatsapp"
-      style="display: none;"
+      id="botao-whatsapp-float"
     >
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
         <path
           d="M12.01 2.013C6.49 2.013 2 6.503 2 12.023c0 2.03.763 3.91 2.007 5.342l-1.08 3.969a1.333 1.333 0 0 0 1.635 1.655l3.63-2.74c1.15.303 2.364.48 3.426.48 5.518 0 9.987-4.49 9.987-9.986 0-2.67-.99-5.093-2.617-6.88C18.082 3.013 15.218 2.013 12.01 2.013z"
         />
       </svg>
-    </a>
+      <span class="pulse" aria-hidden="true"></span>
+    </button>
 
     <!-- =========================
          SCHEMA.ORG JSON-LD
@@ -372,7 +368,14 @@
         "name": "NÓIS Desentupidora",
         "image": "https://noidesentupidora.com.br/assets/logo.png",
         "url": "https://noidesentupidora.com.br/",
-        "telephone": "+55-11-950566792",
+        "telephone": "+55-11-95056-6792",
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "telephone": "+55-11-95056-6792",
+          "contactType": "customer service",
+          "availableLanguage": "Portuguese",
+          "areaServed": "BR"
+        },
         "email": "noisdesentupidora@gmail.com",
         "priceRange": "$$",
         "address": {
@@ -442,21 +445,6 @@
         "description": "NÓIS Desentupidora oferece serviços de desentupimento 24h: limpeza de esgoto, manutenção de caixa de gordura, limpeza de calha e caixa d'água. Orçamento grátis e preço justo."
       }
     </script>
-
-    <!-- Widget Invisível do Turnstile -->
-    <div class="cf-turnstile" data-sitekey="0x4AAAAAAF70VTsOQ4Q-U5DH" data-callback="liberarBotao"></div>
-  <script>
-    function liberarBotao(token) {
-      const botoes = document.querySelectorAll('.botao-protegido');
-    
-      const linkWhatsApp = atob('aHR0cHM6Ly93YS5tZS81NTExOTUwNTY2Nzky');
-    
-      botoes.forEach(function(btn) {
-        btn.href = linkWhatsApp;
-        btn.style.removeProperty('display');
-      });
-    }
-  </script>
 
     <script src="./script.js"></script>
   </body>
