@@ -110,10 +110,10 @@
       title: 'Qual serviço você precisa?',
       subtitle: 'Selecione o tipo de desentupimento',
       options: [
-        { value: 'esgoto', label: '🚽 Limpeza de Esgoto', desc: 'Canos, ralos, rede de esgoto entupida' },
-        { value: 'gordura', label: '🏪 Caixa de Gordura', desc: 'Limpeza e manutenção preventiva' },
-        { value: 'calha', label: '🏠 Calha e Caixa d\'Água', desc: 'Entupimentos, limpeza e vistoria' },
-        { value: 'outro', label: '🔧 Outro serviço', desc: 'Desentupimento em geral / Avaliação' }
+        { value: 'esgoto', label: 'Limpeza de Esgoto', desc: 'Canos, ralos, rede de esgoto entupida' },
+        { value: 'gordura', label: 'Caixa de Gordura', desc: 'Limpeza e manutenção preventiva' },
+        { value: 'calha', label: 'Calha e Caixa d\'Água', desc: 'Entupimentos, limpeza e vistoria' },
+        { value: 'outro', label: 'Outro serviço', desc: 'Desentupimento em geral / Avaliação' }
       ]
     },
     neighborhood: {
@@ -137,10 +137,10 @@
       title: 'Qual a urgência?',
       subtitle: 'Isso nos ajuda a priorizar seu atendimento',
       options: [
-        { value: 'emergencia', label: '🔴 Emergência', desc: 'Preciso AGORA - vazamento, retorno de esgoto' },
-        { value: 'hoje', label: '🟡 Hoje', desc: 'Gostaria de ser atendido ainda hoje' },
-        { value: 'semana', label: '🟢 Nesta semana', desc: 'Posso agendar para os próximos dias' },
-        { value: 'orcamento', label: '🔵 Apenas orçamento', desc: 'Quero saber valores e condições primeiro' }
+        { value: 'emergencia', label: 'Emergência', desc: 'Preciso AGORA - vazamento, retorno de esgoto' },
+        { value: 'hoje', label: 'Hoje', desc: 'Gostaria de ser atendido ainda hoje' },
+        { value: 'semana', label: 'Nesta semana', desc: 'Posso agendar para os próximos dias' },
+        { value: 'orcamento', label: 'Apenas orçamento', desc: 'Quero saber valores e condições primeiro' }
       ]
     }
   };
@@ -612,7 +612,7 @@
       trackQualificationCompleted(qualification);
       $('#progress-text').textContent = 'Verificação concluída';
       body.innerHTML = `
-        <h3 tabindex="-1">✅ Verificação concluída!</h3>
+        <h3 tabindex="-1">Verificação concluída!</h3>
         <p class="step-subtitle">Clique abaixo para abrir o WhatsApp com sua mensagem pré-preenchida.</p>
         <a class="btn btn-primary btn-whatsapp-final" id="btn-whatsapp-final" target="_blank" rel="noopener noreferrer">Conversar no WhatsApp</a>
         <p class="whatsapp-hint">Se a nova aba não abrir, use o link abaixo nesta mesma aba.</p>
@@ -646,6 +646,29 @@
   // =========================
   // MODAL CONTROL
   // =========================
+  function updateModalViewport() {
+    if (!modalOpen || !window.visualViewport) return;
+    const modal = $('#qualification-modal');
+    const viewport = window.visualViewport;
+    // Teclados móveis podem reduzir apenas a área visível, sem alterar 100dvh.
+    // Durante zoom, deixar o navegador controlar a ampliação e o deslocamento.
+    if (viewport.scale !== 1) {
+      modal.style.removeProperty('--qualification-viewport-height');
+      modal.style.removeProperty('--qualification-viewport-top');
+      return;
+    }
+    modal.style.setProperty('--qualification-viewport-height', `${viewport.height}px`);
+    modal.style.setProperty('--qualification-viewport-top', `${viewport.offsetTop}px`);
+    const body = $('#qual-body');
+    const active = document.activeElement;
+    if (body?.contains(active)) {
+      const field = active.getBoundingClientRect();
+      const bounds = body.getBoundingClientRect();
+      if (field.bottom > bounds.bottom) body.scrollTop += field.bottom - bounds.bottom + 8;
+      else if (field.top < bounds.top) body.scrollTop -= bounds.top - field.top + 8;
+    }
+  }
+
   function openModal(source = 'unknown', trigger = document.activeElement) {
     if (modalOpen) return;
     const modal = $('#qualification-modal') || createQualificationModal();
@@ -671,6 +694,9 @@
     // Abrir modal
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
+    updateModalViewport();
+    window.visualViewport?.addEventListener('resize', updateModalViewport);
+    window.visualViewport?.addEventListener('scroll', updateModalViewport);
 
     // Animar entrada
     requestAnimationFrame(() => {
@@ -704,6 +730,8 @@
     const modal = $('#qualification-modal');
     if (!modal || !modalOpen) return;
     modalOpen = false;
+    window.visualViewport?.removeEventListener('resize', updateModalViewport);
+    window.visualViewport?.removeEventListener('scroll', updateModalViewport);
     phase = 'closed';
     sessionId++;
     viewId++;

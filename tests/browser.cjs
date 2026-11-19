@@ -63,10 +63,14 @@ window.fetch = (url, options) => window.__useHttpApi
 let checks = 0;
 async function main() {
   if (!fs.existsSync(executable)) throw new Error('Defina CHROME_PATH para Chrome/Chromium instalado.');
-  const httpMode = process.argv.includes('--http');
+  const visualMode = process.argv.includes('--visual');
+  const httpMode = process.argv.includes('--http') || visualMode;
   const consentMode = process.argv.includes('--consent');
+  const gtmPreviewMode = process.argv.includes('--gtm-preview');
   const nodeApi = httpMode ? await require('./helpers/http-function.cjs').createHttpFunction() : null;
-  const policy = JSON.parse(fs.readFileSync(path.join(root,'vercel.json'),'utf8')).headers[0].headers.find(x=>x.key==='Content-Security-Policy').value;
+  const {policyFor,previewHost}=require('./helpers/vercel-policy.cjs');
+  const policy = policyFor(gtmPreviewMode?previewHost:'www.noisdesentupidora.com.br');
+  const externalRequests=new Set();
   const scriptCounts = new Map();
   let resourceMode = 'normal';
   const server = http.createServer((req, res) => {
@@ -139,14 +143,17 @@ async function main() {
       const message = JSON.parse(event.data);
       if (message.method === 'Fetch.requestPaused') {
         // Intercepta qualquer URL externa: os testes não enviam dados ao Google/Cloudflare.
+        externalRequests.add(message.params.request.url);
         const image = message.params.resourceType === 'Image';
+        const stylesheet = message.params.resourceType === 'Stylesheet';
+        const font = message.params.resourceType === 'Font';
         const body = image
           ? 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII='
-          : Buffer.from('// CSP test fixture').toString('base64');
+          : Buffer.from(stylesheet?':root { --gtm-preview-csp-test: allowed; }':font?'font-network-fixture':'// CSP test fixture').toString('base64');
         send('Fetch.fulfillRequest', {
           requestId: message.params.requestId, responseCode: 200,
           responseHeaders: [
-            {name:'Content-Type',value:image?'image/png':'application/javascript'},
+            {name:'Content-Type',value:image?'image/png':stylesheet?'text/css':font?'font/woff2':'application/javascript'},
             {name:'Access-Control-Allow-Origin',value:'*'}
           ], body
         }, message.sessionId).catch(console.error);
@@ -212,6 +219,39 @@ async function main() {
     }
     async function verify(token) {
       await evaluate('window.__widgets.at(-1).options.callback(' + JSON.stringify(token) + ')');
+    }
+    if (visualMode) {
+      const directory=path.join(root,'output','playwright');
+      fs.mkdirSync(directory,{recursive:true});
+      async function capture(stage) {
+        await evaluate('Promise.all(document.querySelector("#qualification-modal").getAnimations().map(animation=>animation.finished)).then(()=>undefined)');
+        const {data}=await call('Page.captureScreenshot',{format:'png'});
+        fs.writeFileSync(path.join(directory,'v21-complemento-form-'+stage+'.png'),Buffer.from(data,'base64'));
+      }
+      await call('Emulation.setDeviceMetricsOverride',{width:375,height:812,deviceScaleFactor:1,mobile:true});
+      await navigate(); await evaluate('window.__useHttpApi=true');
+      await click('#botao-whatsapp-hero');
+      await wait('document.querySelector("#qualification-modal").classList.contains("open")');
+      await capture('servico');
+      await click('[data-value="esgoto"]'); await click('#btn-next');
+      await capture('localizacao');
+      await evaluate('const input=document.querySelector("#neighborhood-input");input.value="Centro";input.dispatchEvent(new Event("input",{bubbles:true}))');
+      await click('#btn-next'); await capture('urgencia');
+      await click('[data-value="hoje"]'); await click('#btn-next');
+      await wait('window.__widgets?.length>0'); await capture('verificacao-simulada');
+      nodeApi.state.success=false;
+      await verify('visual-failure-token');
+      await wait('!!document.querySelector("#retry-turnstile")');
+      await check('captura de erro sem liberação de WhatsApp','!document.querySelector("#btn-whatsapp-final")');
+      await capture('erro');
+      nodeApi.state.success=true;
+      await click('#retry-turnstile'); await wait('window.__widgets.length===2');
+      await verify('visual-success-token');
+      await wait('!!document.querySelector("#btn-whatsapp-final")');
+      await check('captura de sucesso com mensagem padrão sem emojis','!/[\uFFFD\u{1F6E0}\u{1F4CD}\u23F0]/u.test(new URL(document.querySelector("#btn-whatsapp-final").href).searchParams.get("text"))');
+      await capture('sucesso');
+      console.log('Capturas de seis estados: função Node real, Cloudflare simulado, nenhum contato enviado.');
+      await send('Browser.close'); return;
     }
     if (httpMode) {
       for (const page of ['/index.html','/termos.html']) {
@@ -353,13 +393,32 @@ async function main() {
       await call('Page.removeScriptToEvaluateOnNewDocument',{identifier});
       await check('botão flutuante permanece acima do banner móvel',
         'document.querySelector(".whatsapp-float").getBoundingClientRect().bottom<=document.querySelector("#cookie-banner").getBoundingClientRect().top');
+      for(const width of [375,768,1024,1440,1920]) {
+        await call('Emulation.setDeviceMetricsOverride',{width,height:800,deviceScaleFactor:1,mobile:width<768});
+        await wait('document.querySelector(".whatsapp-float").getBoundingClientRect().bottom<=document.querySelector("#cookie-banner").getBoundingClientRect().top');
+        await check('banner sem sobreposição e escolhas equivalentes '+width+'px',
+          'document.documentElement.scrollWidth<=innerWidth && ["cookie-accept","cookie-reject"].every(id=>{const rect=document.getElementById(id).getBoundingClientRect();return rect.height>=44 && rect.left>=0 && rect.right<=innerWidth}) && Math.abs(document.querySelector("#cookie-accept").getBoundingClientRect().width-document.querySelector("#cookie-reject").getBoundingClientRect().width)<1');
+      }
       await check('sem iframe GTM que ignore consentimento com JavaScript desativado', '!document.querySelector("noscript iframe")');
+      await call('Emulation.setDeviceMetricsOverride',{width:320,height:667,deviceScaleFactor:1,mobile:true});
+      await check('banner móvel mantém contato pelo cabeçalho sem flutuante sobre o CTA',
+        'getComputedStyle(document.querySelector("#botao-whatsapp-float")).display==="none" && document.querySelector("#botao-whatsapp-header").getBoundingClientRect().height>=44');
+      await click('#cookie-reject');
+      await check('recusa revela novamente o botão flutuante protegido',
+        'document.querySelector("#cookie-banner").hidden && document.querySelector("#botao-whatsapp-float").getBoundingClientRect().width>=44');
       await check('consentimento compatível com a CSP existente','__cspViolations.length===0');
       console.log('Consent Mode: '+checks+' verificações aprovadas; GTM externo simulado, sem envio ao Google.');
       await send('Browser.close'); return;
     }
     await navigate();
     await check('um bootstrap GTM', 'dataLayer.filter(x=>x.event==="gtm.js").length===1');
+    await evaluate('document.querySelector(".faq-list summary").focus()');
+    await call('Input.dispatchKeyEvent', {type:'keyDown',key:'Enter',code:'Enter',windowsVirtualKeyCode:13,nativeVirtualKeyCode:13,text:'\r',unmodifiedText:'\r'});
+    await call('Input.dispatchKeyEvent', {type:'keyUp',key:'Enter',code:'Enter',windowsVirtualKeyCode:13,nativeVirtualKeyCode:13});
+    await check('FAQ abre com Enter nativo e mantém foco', 'document.querySelector(".faq-list details").open && document.activeElement===document.querySelector(".faq-list summary")');
+    await call('Input.dispatchKeyEvent', {type:'keyDown',key:' ',code:'Space',windowsVirtualKeyCode:32,nativeVirtualKeyCode:32});
+    await call('Input.dispatchKeyEvent', {type:'keyUp',key:' ',code:'Space',windowsVirtualKeyCode:32,nativeVirtualKeyCode:32});
+    await check('FAQ fecha com Espaço sem gerar intenção WhatsApp', '!document.querySelector(".faq-list details").open && !dataLayer.some(x=>x.event==="whatsapp_intent")');
     for (const [selector, source] of [
       ['#botao-whatsapp-header', 'header'], ['#botao-whatsapp-float', 'float'],
       ['#botao-whatsapp-hero', 'hero'], ['#botao-whatsapp-preco', 'price']
@@ -458,7 +517,19 @@ async function main() {
     await check('mobile 375px: modal sem overflow horizontal', 'document.documentElement.scrollWidth<=375 && document.querySelector(".qualification-container").getBoundingClientRect().right<=375 && document.querySelector("#qual-close").getBoundingClientRect().width>=44');
     await evaluate('document.dispatchEvent(new KeyboardEvent("keydown",{key:"Escape",bubbles:true}))');
     await check('ESC fecha e restaura foco', '!document.querySelector("#qualification-modal").classList.contains("open") && document.activeElement.id==="botao-whatsapp-hero"');
-    for (const width of [320, 768]) {
+    await evaluate('window.__viewportDescriptor=Object.getOwnPropertyDescriptor(window,"visualViewport");window.__testViewport=Object.assign(new EventTarget(),{height:667,offsetTop:0,scale:1});Object.defineProperty(window,"visualViewport",{value:__testViewport,configurable:true});void 0');
+    await click('#botao-whatsapp-hero');
+    await click('[data-value="esgoto"]'); await click('#btn-next');
+    await evaluate('document.querySelector("#neighborhood-input").focus();__testViewport.height=360;__testViewport.offsetTop=24;__testViewport.dispatchEvent(new Event("resize"))');
+    await check('área visível reduzida: campo focado e ações acessíveis',
+      '(()=>{const modal=document.querySelector(".qualification-container").getBoundingClientRect(),field=document.querySelector("#neighborhood-input").getBoundingClientRect(),body=document.querySelector("#qual-body").getBoundingClientRect(),next=document.querySelector("#btn-next").getBoundingClientRect();return modal.top>=24 && modal.bottom<=384 && field.top>=body.top-1 && field.bottom<=body.bottom+1 && next.bottom<=384 && document.activeElement.id==="neighborhood-input"})()');
+    await evaluate('__testViewport.scale=2;__testViewport.dispatchEvent(new Event("resize"))');
+    await check('zoom mantém controle do navegador','!document.querySelector("#qualification-modal").style.getPropertyValue("--qualification-viewport-height")');
+    await click('#qual-close');
+    await evaluate('__testViewport.scale=1;__testViewport.height=300;__testViewport.dispatchEvent(new Event("resize"))');
+    await check('viewport antigo não altera modal fechado','!document.querySelector("#qualification-modal").style.getPropertyValue("--qualification-viewport-height")');
+    await evaluate('if(__viewportDescriptor)Object.defineProperty(window,"visualViewport",__viewportDescriptor);else delete window.visualViewport;void 0');
+    for (const width of [320, 768, 1024, 1440, 1920]) {
       await call('Emulation.setDeviceMetricsOverride', { width, height: 800, deviceScaleFactor: 1, mobile: true });
       await navigate(); await fillToVerification();
       await new Promise(resolve => setTimeout(resolve, 350));
@@ -522,6 +593,40 @@ async function main() {
     for (const domain of ['googleads.g.doubleclick.net','www.google.com','www.googleadservices.com','pagead2.googlesyndication.com']) {
       await check('CSP img '+domain, 'new Promise(resolve=>{const img=new Image();img.onload=()=>resolve(true);img.onerror=()=>resolve(false);img.src="https://'+domain+'/__csp_test__.png"})');
     }
+    // Preview GTM: URLs exatas reportadas e demais recursos da tabela oficial.
+    // onload/onerror verifica a aplicação da CSP de verdade; a rede é interceptada.
+    for(const url of [
+      'https://www.googletagmanager.com/debug/badge.css',
+      'https://fonts.googleapis.com/icon',
+      'https://fonts.googleapis.com/css',
+      'https://tagmanager.google.com/__csp_test__.css'
+    ]){
+      await check('CSP estilo '+(gtmPreviewMode?'permite Preview ':'bloqueia fora do Preview ')+url,
+        'new Promise(resolve=>{const link=document.createElement("link");link.rel="stylesheet";link.href='+JSON.stringify(url)+';link.onload=()=>resolve('+gtmPreviewMode+');link.onerror=()=>resolve('+!gtmPreviewMode+');document.head.appendChild(link)})');
+    }
+    await check('estilos externos '+(gtmPreviewMode?'aplicados no Preview':'não aplicados em Production'),
+      'getComputedStyle(document.documentElement).getPropertyValue("--gtm-preview-csp-test").trim()==='+JSON.stringify(gtmPreviewMode?'allowed':''));
+    await check('CSP script de depuração restrito ao Preview',
+      'new Promise(resolve=>{const s=document.createElement("script");s.src="https://tagmanager.google.com/__csp_test__.js";s.onload=()=>resolve('+gtmPreviewMode+');s.onerror=()=>resolve('+!gtmPreviewMode+');document.head.appendChild(s)})');
+    for(const host of ['ssl.gstatic.com','www.gstatic.com']){
+      await check('CSP imagem de depuração '+host,
+        'new Promise(resolve=>{const img=new Image();img.onload=()=>resolve('+gtmPreviewMode+');img.onerror=()=>resolve('+!gtmPreviewMode+');img.src="https://'+host+'/__csp_test__.png"})');
+    }
+    const allowedFont='https://fonts.gstatic.com/__csp_test__.woff2';
+    await evaluate('new FontFace("CspFontTest",'+JSON.stringify('url('+allowedFont+')')+').load().catch(()=>undefined)');
+    // Fixture não contém uma fonte válida: testa autorização da requisição, não rasterização.
+    await check('CSP permite requisição da fonte Google',JSON.stringify(externalRequests.has(allowedFont)));
+    if(gtmPreviewMode){
+      const deniedFont='https://untrusted.invalid/__csp_test__.woff2';
+      await evaluate('new FontFace("DeniedFontTest",'+JSON.stringify('url('+deniedFont+')')+').load().catch(()=>undefined)');
+      await check('CSP Preview bloqueia fonte fora de fonts.gstatic.com',JSON.stringify(!externalRequests.has(deniedFont)));
+    }
+    for(const url of ['https://untrusted.invalid/test.css','https://fonts.googleapis.com.evil.test/test.css']){
+      await check('CSP bloqueia estilo não autorizado '+url,
+        'new Promise(resolve=>{const link=document.createElement("link");link.rel="stylesheet";link.href='+JSON.stringify(url)+';link.onload=()=>resolve(false);link.onerror=()=>resolve(true);document.head.appendChild(link)})');
+    }
+    await check('CSP bloqueia conexão Tag Assistant sem requisito documentado',
+      'window.__nativeFetch("https://tagassistant.google.com/__csp_test__").then(()=>false,()=>true)');
     // A URL exata reportada é atendida pelo interceptador local: nenhuma conversão real é enviada.
     await check('CSP permite script viewthroughconversion reportado',
       'new Promise(resolve=>{const s=document.createElement("script");s.src="https://googleads.g.doubleclick.net/pagead/viewthroughconversion/18556510889/";s.onload=()=>resolve(true);s.onerror=()=>resolve(false);document.head.appendChild(s)})');
@@ -533,7 +638,7 @@ async function main() {
     await check('CSP bloqueia script não autorizado', 'new Promise(resolve=>{const s=document.createElement("script");s.src="https://untrusted.invalid/__csp_test__.js";s.onload=()=>resolve(false);s.onerror=()=>resolve(true);document.head.appendChild(s)})');
     await check('CSP bloqueia imagem não autorizada', 'new Promise(resolve=>{const img=new Image();img.onload=()=>resolve(false);img.onerror=()=>resolve(true);img.src="https://untrusted.invalid/__csp_test__.png"})');
     await check('CSP sem unsafe-eval', '!'+JSON.stringify(policy)+'.includes("unsafe-eval")');
-    console.log('Browser: ' + checks + ' verificações aprovadas. Turnstile/GTM/API simulados; nenhum contato real enviado.');
+    console.log('Browser '+(gtmPreviewMode?'CSP Preview':'CSP Production')+': ' + checks + ' verificações aprovadas. Turnstile/GTM/API simulados; nenhum contato real enviado.');
     await send('Browser.close');
   } finally {
     socket?.close();

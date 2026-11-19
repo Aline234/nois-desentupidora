@@ -25,13 +25,13 @@ Configure em Settings → Environment Variables, separadamente para Production e
 | Variável | Uso |
 | --- | --- |
 | TURNSTILE_SECRET_KEY | Obrigatória. Secret real do widget; nunca colocar no HTML, JavaScript público ou repositório. |
-| EXPECTED_HOSTNAMES | Lista explícita de hostnames separados por vírgula, sem esquema, porta, caminho ou curingas. Ex.: noidesentupidora.com.br,www.noidesentupidora.com.br. |
+| EXPECTED_HOSTNAMES | Lista explícita de hostnames separados por vírgula, sem esquema, porta, caminho ou curingas. Ex.: noisdesentupidora.com.br,www.noisdesentupidora.com.br. |
 | EXPECTED_HOSTNAME | Compatibilidade com configuração anterior de um único hostname; usada se EXPECTED_HOSTNAMES não estiver definida. |
-| ALLOWED_ORIGIN | Origens completas separadas por vírgula, sem barra final. Ex.: https://noidesentupidora.com.br,https://www.noidesentupidora.com.br. |
+| ALLOWED_ORIGIN | Origens completas separadas por vírgula, sem barra final. Ex.: https://www.noisdesentupidora.com.br,https://www.noisdesentupidora.com.br. |
 | WHATSAPP_NUMBER | Número comercial em formato internacional, apenas 10 a 15 dígitos. Atual: 5511950566792. |
 | WHATSAPP_MESSAGE_EMOJIS | Ausente ou false: sem emojis fixos (padrão temporário). true: somente diagnóstico, reativar após validar o percurso externo. |
 
-Sem configuração explícita, hostname e origem usam apenas noidesentupidora.com.br e https://noidesentupidora.com.br. Se www servir o site sem redirecionar, adicione-o explicitamente nas duas listas e no widget Cloudflare.
+Sem configuração explícita, os defaults incluem www.noisdesentupidora.com.br, noisdesentupidora.com.br e nois-desentupidora.vercel.app, com origens HTTPS equivalentes. Variáveis explícitas substituem essas listas; confira os valores completos na seção de migração.
 
 WHATSAPP_NUMBER mantém o valor comercial atual como fallback; configure a variável para facilitar manutenção. Número inválido configurado retorna 500 e não libera URL.
 
@@ -404,3 +404,367 @@ legado, aceitação, recusa, navegação, recarregamento, revogação local/entr
 storage bloqueado/inválido, ausência de mensuração retroativa, atendimento negado,
 CSP e controles móveis. O modo HTTP executa o handler real com Siteverify simulado.
 Nenhum deploy de Production foi realizado.
+
+
+## Migração de domínio — 18/11/2026
+
+Oficial: https://www.noisdesentupidora.com.br
+Transição: https://nois-desentupidora.vercel.app continua servindo as páginas sem redirect.
+O domínio apex noisdesentupidora.com.br será redirecionado para www pelo painel Vercel,
+conforme configuração do proprietário. Nenhum redirect foi acrescentado ao vercel.json.
+
+Canonical e og:url das duas páginas apontam ao www oficial; JSON-LD usa o mesmo domínio.
+As imagens OG/schema usam /imagens/logo.png, arquivo existente, substituindo assets inexistentes.
+Sitemap lista somente as duas páginas canônicas; robots permite rastreamento e referencia esse sitemap.
+Canonical é indicação aos buscadores, não redirecionamento de visitantes. O endereço antigo permanece
+acessível para a campanha. Não bloquear seu rastreamento nem adicionar noindex durante esta transição.
+Os perfis sociais e e-mail comerciais foram preservados. A verificação HTML Google foi mantida.
+
+IMPORTANTE: variáveis explícitas substituem os defaults do código. Para manter os dois sites operacionais,
+conferir estas listas em Production (sem espaços, caminhos, curingas ou barra final):
+EXPECTED_HOSTNAMES=www.noisdesentupidora.com.br,noisdesentupidora.com.br,nois-desentupidora.vercel.app
+ALLOWED_ORIGIN=https://www.noisdesentupidora.com.br,https://noisdesentupidora.com.br,https://nois-desentupidora.vercel.app
+
+Esses também são os defaults da função. Hostname e action continuam estritos; não há autorização automática
+de outros projetos Vercel. Preview precisa de suas próprias listas explícitas e hostname autorizado.
+Manter o hostname antigo no widget Cloudflare junto dos novos durante a campanha.
+Não foi possível confirmar variáveis Production ou painel Cloudflare por inspeção de arquivos.
+
+A API continua relativa (/api/verify-turnstile), funcionando em cada origem. Links internos, scripts,
+Consent Mode e demais recursos locais continuam relativos. CSP, GTM, eventos e WhatsApp preservados.
+Preferências de cookies são locais à origem: a decisão no vercel.app não migra automaticamente para www;
+o visitante deve escolher novamente. Não compartilhar tokens ou consentimento entre domínios por URL.
+
+Validação externa antes da publicação:
+- Conferir DNS/TLS de www e apex no Registro.br/Vercel, já configurados pelo proprietário.
+- Conferir redirect apex → www e ausência de redirect no domínio vercel.app.
+- Conferir as listas acima e completar o fluxo real de WhatsApp em ambos os hosts, com consentimento negado e aceito.
+- Auditar acionadores GTM existentes filtrados por Page Hostname; incluir o www se houver filtros, sem duplicar tags.
+- Verificar propriedade do novo domínio no Search Console (DNS do Registro.br), enviar /sitemap.xml e inspecionar canonicals.
+- Confirmar imagens, robots e sitemap por HTTP no novo domínio; cabeçalhos de proteção de Preview não devem ir a Production.
+- Planejar futuramente mudança do destino da campanha e redirect do vercel.app, somente após autorização.
+Não foi alterado Google Ads nem executado deploy de Production ou git push.
+
+
+Testes da migração executados:
+- node --test tests/backend.test.cjs tests/http-integration.test.cjs tests/domain-migration.test.cjs:
+  50 aprovados, 2 testes de rede WhatsApp opcionais ignorados.
+- node tests/browser.cjs --consent: 30 verificações aprovadas.
+- node tests/browser.cjs: 69 verificações aprovadas.
+- node tests/browser.cjs --http --consent: 17 verificações aprovadas.
+- Sintaxe da função e git diff --check aprovados.
+As integrações usam Siteverify simulado; DNS, TLS, redirects e variáveis dos painéis precisam ser
+validados externamente no ambiente publicado. Esses testes não comprovam o Cloudflare de Production.
+
+
+## Redesign Nóis 2.0 — 18/11/2026
+
+HTML/CSS existentes foram repaginados; nenhum framework ou fonte remota foi adicionado.
+Hero, navegação, serviços, aplicações residencial/comercial/condominial, diferenciais,
+oferta, rodapé, formulário e apresentação do consentimento seguem DESIGN.md.
+A oferta de preço anterior foi removida; o texto comercial novo é o fornecido pelo proprietário.
+Promessas de chegada/resposta em minutos foram retiradas, sem acrescentar garantias.
+
+Preservação confirmada por SHA-256 contra o início desta tarefa: api/verify-turnstile.js,
+consent.js, vercel.json, sitemap.xml e robots.txt estão idênticos. Os arquivos já tinham
+alterações anteriores no workspace; nenhuma foi revertida. Canonical/OG/schema e a migração
+foram validados pelos testes existentes. O script.js mudou apenas rótulos visuais dos
+passos (retirada de emojis), mantendo lógica, opções, seletores e eventos.
+
+Capturas em output/playwright/: before-*, after-*, modal-* nas larguras 320, 375, 768,
+1024 e 1440. after-clean-1440.png mostra a página com consentimento recusado.
+terms-375.png registra a página de termos. comparacao.html reúne antes/depois.
+As capturas anteriores foram feitas antes de editar, percorrendo as seções para ativar
+os reveals antigos. O redesign não depende desses reveals para exibir conteúdo.
+
+Verificações:
+- Sem overflow horizontal na página principal, termos e modal nas cinco larguras.
+- Playwright: Tab/Enter no atalho focalizam main; Escape fecha modal.
+- Inspeção visual desktop, mobile, modal e termos com refinamento de cabeçalho/foco.
+- node --test tests/redesign.test.cjs: 3 aprovados (oferta, seletores/atalhos, contraste).
+- Suítes backend/HTTP/migração: 50 aprovados; 2 testes de rede opcionais ignorados.
+- node tests/browser.cjs --consent: 30 verificações aprovadas.
+- node tests/browser.cjs: 69 verificações aprovadas, incluindo deduplicação de eventos e CSP.
+- node tests/browser.cjs --http --consent: 17 verificações aprovadas.
+- Sintaxe script.js e git diff --check verificados.
+
+Comparação de tamanho bruto (HTML principal + CSS + JS principal):
+antes 67.867 bytes; depois aproximadamente 70.813 bytes (+2,9 KB).
+O aumento pequeno acompanha mais conteúdo e estados acessíveis. Logo/ícone originais
+reutilizados; nenhuma imagem ou biblioteca externa adicional. Não foi executado Lighthouse
+com condições de rede controladas: não se afirma ganho de Core Web Vitals ou conversão.
+O CSS de teste usa cache desabilitado para evitar capturar uma versão antiga durante a edição.
+
+A oferta, disponibilidade real, desafio Cloudflare e tags/consentimento publicados devem
+ser conferidos no Preview. Não foram enviados leads reais, feito git push, deploy de
+Production ou alterações externas no Google Ads.
+
+## Refinamento Nóis 2.1 — 18/11/2026
+
+Evolução do visual 2.0 aprovado, em index.html e styles.css. A paleta permanece a mesma
+(DESIGN.md). Hero com H1 local, slogan preservado, painel de emergência menor e sem logo
+repetido; faixa compacta de benefícios; sete serviços em duas categorias; públicos com
+descrições próprias; institucional; oferta com equivalência de serviços explícita;
+pagamentos integrados; áreas atendidas e FAQ nativo de 12 perguntas.
+
+Condições informadas pelo proprietário: orçamento e visita técnica gratuitos, sem
+restrições à visita; Pix, dinheiro, débito e crédito; até 3x sem juros; serviços com
+garantia; emissão de nota fiscal; equipe e veículos próprios. Não foi definido prazo
+nem cobertura de garantia: o site orienta consultar as condições. Não foram acrescentados
+depoimentos, fotografias, capacidade técnica ou prazo de chegada não confirmados.
+O anexo terminava na última pergunta “Quais regiões”; a resposta utiliza somente
+Grande São Paulo e as cinco cidades já presentes no projeto.
+
+### Formulário e preservação
+
+Nenhum novo botão de contato, pergunta ou valor de serviço foi criado. O botão
+“Solicitar meu orçamento” mantém id botao-whatsapp-preco e origem price. Os quatro
+botões de WhatsApp continuam abrindo o mesmo fluxo protegido.
+
+Os valores existentes continuam esgoto, gordura, calha e outro. Hidrojateamento,
+inspeção por câmera e manutenção preventiva podem ser solicitados em “Outro serviço”,
+com esclarecimento pela equipe no atendimento. Uma futura categorização específica
+deve ser proposta e aprovada antes de atualizar simultaneamente lista do frontend,
+validação e mensagem do backend, testes e relatórios/variáveis do GTM. Nesta versão
+não se altera a taxonomia de mensuração.
+
+Comparação SHA-256 com o início do refinamento (output/playwright/v21-baseline.json):
+api/verify-turnstile.js, script.js, consent.js, vercel.json, sitemap.xml, robots.txt e
+termos.html idênticos. As diferenças anteriores do workspace foram preservadas.
+Canonical, Open Graph e JSON-LD mantidos. Nenhuma configuração de ambiente nova,
+alteração externa no Cloudflare/GTM/Google Ads ou redirect foi necessária.
+
+### Validação local 2.1
+
+- node --test tests/backend.test.cjs tests/domain-migration.test.cjs tests/http-integration.test.cjs tests/redesign.test.cjs:
+  53 aprovados, 2 testes opcionais de rede WhatsApp ignorados, zero falhas.
+- node tests/browser.cjs: 73 verificações aprovadas, incluindo FAQ com Enter/Espaço,
+  deduplicação de eventos, formulário completo, sessões, tokens, CSP e recuperação de erros.
+- node tests/browser.cjs --consent: 30 verificações aprovadas.
+- node tests/browser.cjs --http --consent: 17 verificações aprovadas.
+- node --check em script.js, consent.js, api/verify-turnstile.js e tests/browser.cjs;
+  git diff --check sem erros.
+- Playwright/Chrome: página, termos e modal sem overflow horizontal em 320, 375,
+  768, 1024 e 1440 px. Tab/Enter no atalho levam ao conteúdo; Escape fecha o modal e
+  devolve o foco ao botão de origem. FAQ usa controles nativos sem novo JavaScript.
+
+Capturas antes/depois, modal e termos em output/playwright/v21-*. Comparação visual
+em output/playwright/v21-comparacao.html. Foram inspecionadas as capturas e refinado
+o FAQ para eliminar a coluna vazia no desktop. Os screenshots antes da edição são
+da versão 2.0 aprovada; a comparação anterior 1.0/2.0 continua disponível.
+
+HTML principal + CSS + JS principal: 70.790 → 79.828 bytes brutos (+9.038 bytes),
+com o novo conteúdo institucional/comercial. Sem novas bibliotecas, fontes remotas
+ou imagens. Não foi medido Lighthouse sob rede controlada; não se afirma melhora de
+Core Web Vitals ou aumento de conversão apenas com essa comparação de tamanho.
+
+### Checklist de Preview 2.1
+
+- Conferir os textos comerciais, região, gratuidade, parcelamento e garantia.
+- Conferir hero, faixa de benefícios, sete serviços e FAQ em celular e desktop.
+- Percorrer as três perguntas; voltar, fechar e reabrir; conferir a seleção e o foco.
+- Validar o desafio Cloudflare real no hostname do Preview e o WhatsApp no aparelho.
+- Recusar cookies e concluir atendimento; aceitar, restaurar e revogar preferências.
+- No Tag Assistant, conferir Consent Mode v2 e um whatsapp_intent por interação,
+  qualification_completed após verificação e whatsapp_redirect no link final.
+- Conferir que nenhuma conversão é interpretada como prova de conversa iniciada.
+
+Os testes de navegador simulam serviços externos; o modo --http usa a função Node
+real com Siteverify simulado. As capturas e testes locais não comprovam desafio real,
+entrega no WhatsApp, tags publicadas ou comportamento de teclado virtual iOS/Android.
+Nenhum contato real foi enviado, nem git push ou deploy de Production executado.
+
+## Complemento final do pedido 2.1 — 18/11/2026
+
+Esta seção registra a versão após o recebimento da parte que faltava do pedido.
+Ela atualiza as métricas e o escopo da validação 2.1 registrados acima.
+
+### Alterações e decisões
+
+- FAQ com a resposta de regiões fornecida e a pergunta sobre cobertura de orçamentos.
+  Treze perguntas, ordenadas por urgência, local, gratuidade e condições comerciais.
+- Hero mobile com margens menores e CTA de largura total. Em 375 × 667px, o banner
+  caiu de 195,94 para 141,5px; em 1440 × 900px, de 93,5 para 71px. O CTA principal
+  fica acima do banner em 320/375 × 667px nas capturas finais.
+- Aceitar e recusar têm a mesma largura, apresentação e área mínima de 44px. Preferências,
+  revogação e finalidade dos quatro estados de consentimento foram preservadas.
+- Enquanto o banner está aberto em celular, o flutuante fica oculto para não cobrir o
+  CTA principal. Cabeçalho e hero continuam abrindo o formulário protegido. O flutuante
+  volta após a escolha, inclusive recusa. No desktop permanece acima do banner.
+- script.js recebeu somente um ajuste funcional de apresentação: visualViewport limita
+  altura e posição do modal à área visível, mantendo o campo focado no corpo rolável.
+  Listeners são vinculados ao abrir e removidos ao fechar; zoom não é substituído.
+  Motivo: teclado móvel pode reduzir só a área visível, sem redimensionar o layout
+  ([documentação Chrome](https://developer.chrome.com/blog/viewport-resize-behavior)).
+- Metadados title/description/OG refletem a Grande São Paulo e serviços confirmados.
+  Charset no início de ambas as páginas; termos com um H1 e documentos/subseções H2/H3.
+  Links de serviços do rodapé dos termos agora apontam para index.html e âncoras existentes.
+- JSON-LD: tipo [Plumber](https://schema.org/Plumber), área Grande São Paulo em vez do
+  estado inteiro, sete serviços e pagamentos confirmados. Nenhum preço numérico,
+  avaliação, certificação, prazo ou endereço novo foi adicionado. Endereço, geo,
+  priceRange e perfis sociais previamente existentes foram mantidos; não houve
+  confirmação externa desses dados nesta tarefa.
+
+Arquivos do complemento: index.html, termos.html, styles.css, script.js,
+tests/browser.cjs, tests/domain-migration.test.cjs, DESIGN.md e DEPLOY.md.
+Artefatos locais em output/playwright/v21-complemento-*.
+
+SHA-256 comparado com v21-complemento-baseline.json confirma API, consent.js, vercel.json,
+sitemap.xml e robots.txt idênticos. O script.js mudou apenas no controle visual do modal;
+mensagem padrão sem emojis, telefone, proteção, sessões, eventos e taxonomia mantidos.
+Não é necessária nova variável de ambiente nem mudança em Cloudflare, GTM ou Google Ads.
+Não há redirecionamento novo do domínio antigo.
+
+### Testes realmente executados
+
+- node --test tests/backend.test.cjs tests/domain-migration.test.cjs tests/http-integration.test.cjs tests/redesign.test.cjs:
+  54 aprovados, 2 opcionais de rede WhatsApp ignorados, zero falhas.
+- node tests/browser.cjs: 77 verificações aprovadas; inclui segurança, sessões/tokens,
+  recuperação, eventos, FAQ com Enter/Espaço e 1920px.
+- node tests/browser.cjs --consent: 37 verificações aprovadas, com escolhas de tamanho
+  equivalente, banner/flutuante nas seis larguras e atendimento com cookies recusados.
+- node tests/browser.cjs --http --consent: 17 verificações aprovadas, função Node HTTP
+  real com Siteverify simulado; não envia conversão ou mensagem real.
+- node tests/browser.cjs --visual: 2 verificações e capturas de seis estados: serviço,
+  localização, urgência, verificação simulada, erro e sucesso. Backend Node real,
+  Cloudflare simulado e nenhum clique de envio final.
+- Sintaxe JavaScript e git diff --check aprovados.
+- Playwright/Chrome: páginas principal e termos sem overflow em 320, 375, 768, 1024,
+  1440 e 1920px; primeiras dobras, banner aberto/fechado e comparações capturados.
+  Navegação por teclado, fechamento/reabertura e foco continuam cobertos pelos testes.
+- Área visível reduzida a 360px e deslocada 24px foi simulada no Chrome para verificar
+  campo focado, rodapé, zoom e remoção de listeners. Captura adicional em 375 × 360px:
+  fechar e avançar ficam dentro da tela. Isso não equivale a abrir teclado físico
+  Android/iOS: ambos precisam de teste manual no Preview.
+
+### Lighthouse — laboratório local
+
+Lighthouse 13.6.0, Chrome headless, servidor Python HTTP em 127.0.0.1:8765,
+perfil novo sem autorização de cookies, sem disparar GTM e sem concluir o Turnstile.
+Script Cloudflare carregado normalmente; sem bloqueio de URLs ou alteração da página
+para o Lighthouse. Perfil mobile padrão e preset desktop, throttling simulado.
+Execuções únicas e sequenciais; não são dados de campo/CrUX nem medição de Production.
+O servidor estático local não reproduz TLS, CDN ou cabeçalhos da Vercel; CSP foi
+testada separadamente pelo servidor da suíte de navegador com a política do projeto.
+
+| Perfil | Desempenho | Acessibilidade | Boas práticas | SEO | FCP / LCP | CLS | TBT |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Antes do complemento, mobile | 100 | 100 | 100 | 100 | 1,1s / 1,1s | 0,004 | 0ms |
+| Final, mobile | 100 | 100 | 100 | 100 | 1,2s / 1,2s | 0 | 0ms |
+| Final, desktop | 100 | 100 | 100 | 100 | 0,4s / 0,4s | 0 | 0ms |
+
+Os resultados não comprovam ganho de velocidade: há variação entre execuções e nenhum
+dado real de usuários foi coletado. O relatório ainda aponta oportunidades de tamanho
+do logo PNG, minificação, CSS/JS usados só nas interações e cache do servidor local.
+Não foram adicionados frameworks, fontes, bibliotecas ou imagens, nem alterado o
+carregamento de consentimento/segurança para melhorar uma nota de laboratório.
+
+HTML principal + CSS + JS: 79.828 → 84.478 bytes brutos no complemento (+4.650 bytes).
+Os relatórios completos HTML/JSON estão em v21-complemento-lighthouse-*.report.*.
+A galeria v21-complemento-comparacao.html reúne capturas e links dos relatórios.
+
+### Pendências para Preview
+
+Conferir as condições comerciais e o FAQ, validar teclado real Android/iOS com foco
+no bairro, orientação e zoom, percorrer o desafio real do Turnstile, abrir o WhatsApp
+com cookies recusados e verificar os eventos/consentimento no Tag Assistant. Conferir
+canonical e CSP nos cabeçalhos reais da Vercel. Os testes locais não confirmam entrega
+no aplicativo, conversas iniciadas ou configuração externa das conversões existentes.
+Não houve git push, deploy de Production nem alteração em configurações externas.
+
+## CSP do modo Preview do GTM — 18/11/2026
+
+### Diagnóstico e escopo
+
+O contêiner carregava, mas os estilos de depuração eram bloqueados. A política não
+declara style-src-elem: o navegador aplica style-src como fallback, limitado a self
+e unsafe-inline. Portanto o bloqueio desses estilos é compatível com o GTM já carregado.
+Referência: [Google — Preview Mode e CSP](https://developers.google.com/tag-platform/security/guides/csp#preview_mode).
+
+A correção é exclusiva do hostname confirmado pelo proprietário:
+nois-desentupidora-teste-aline-9883.vercel.app.
+Em vercel.json, has/missing com type host e value.eq escolhem políticas mutuamente
+exclusivas. Não há duas CSP cumulativas na mesma resposta. Todos os outros cabeçalhos
+de proteção são iguais nas duas regras. O schema oficial da Vercel foi consultado e
+confirma suporte a comparação eq de host. Referência:
+[Vercel — headers e condições has/missing](https://vercel.com/docs/project-configuration/vercel-json#headers).
+
+Isso delimita a política por hostname, sem migrar o projeto estático para configuração
+programática, adicionar middleware ou modificar o build. Não é uma detecção de
+VERCEL_ENV: um novo endereço de deployment não recebe as permissões automaticamente.
+Use o alias confirmado; para outro hostname de teste, revisar explicitamente as duas
+condições e seus testes. Os três domínios públicos (www, sem www e o vercel.app antigo)
+continuam recebendo exatamente a política e os cabeçalhos anteriores.
+
+### Diretivas alteradas somente no hostname de teste
+
+| Diretiva | Alteração | Motivo |
+| --- | --- | --- |
+| style-src | Acrescenta https://www.googletagmanager.com, https://tagmanager.google.com e https://fonts.googleapis.com | badge.css, folhas /icon e /css e estilos de depuração indicados pelo Google |
+| script-src | Acrescenta https://tagmanager.google.com | Origem adicional de scripts indicada para GTM Preview; www.googletagmanager.com já era permitida |
+| img-src | Acrescenta https://ssl.gstatic.com e https://www.gstatic.com | Imagens da interface de depuração indicadas pelo Google |
+| font-src | Troca o esquema amplo https: por https://fonts.gstatic.com; mantém self e data: | Fontes do Preview, com origem exata em vez de liberar qualquer fonte HTTPS |
+
+style-src-elem e script-src-elem continuam sem declaração própria e usam os fallbacks
+style-src/script-src. Isso preserva estilos inline, arquivos locais, Turnstile e
+Google Ads sem criar listas parciais divergentes. Não foi adicionado unsafe-eval,
+nenhum curinga novo ou novo esquema genérico. O font-src dos domínios públicos continua
+como estava (self, data:, https:); o endurecimento de fontes é exclusivo da depuração.
+
+connect-src, frame-src, default-src, base-uri, form-action e os demais cabeçalhos
+permaneceram idênticos. As conexões www.googletagmanager.com e www.google.com exigidas
+na documentação já eram permitidas. O guia de Preview não exige connect-src para
+tagassistant.google.com: não há evidência fornecida de uma requisição bloqueada a ele,
+por isso essa origem não foi liberada. Nenhuma CSP adicional em meta, COOP ou rotina
+de conexão própria do Tag Assistant foi encontrada no HTML/JS do projeto.
+
+### Preservação e testes
+
+Arquivos desta correção: vercel.json, tests/browser.cjs, tests/csp-preview.test.cjs,
+tests/helpers/vercel-policy.cjs e DEPLOY.md. Nenhum arquivo de design, HTML, JavaScript
+do site, Consent Mode ou função de verificação foi alterado nesta tarefa.
+Comparação SHA-256 contra output/playwright/gtm-preview-csp-baseline.json confirma
+preservação de index.html, termos.html, styles.css, script.js, consent.js,
+api/verify-turnstile.js, sitemap.xml e robots.txt. A política e todos os cabeçalhos dos
+domínios públicos foram comparados integralmente com o mesmo registro.
+
+Executado:
+
+- node --test tests/csp-preview.test.cjs tests/backend.test.cjs tests/domain-migration.test.cjs tests/http-integration.test.cjs tests/redesign.test.cjs:
+  57 aprovados, 2 opcionais de rede ignorados, zero falhas.
+- node tests/browser.cjs: 89 verificações aprovadas usando a política dos domínios públicos.
+- node tests/browser.cjs --gtm-preview: 90 verificações aprovadas usando a política de depuração.
+- node tests/browser.cjs --gtm-preview --consent: 37 verificações aprovadas.
+- node tests/browser.cjs --gtm-preview --http --consent: 17 verificações aprovadas.
+- node --check nos arquivos de testes alterados e git diff --check sem erros.
+
+No Chrome real, as três URLs reportadas são carregadas como link rel=stylesheet com
+MIME CSS correto: onload e aplicação de uma propriedade CSS confirmam autorização no
+Preview. A mesma operação é bloqueada pela política pública. Também são testados
+scripts/imagens de depuração, fontes, domínios semelhantes maliciosos, conexões não
+autorizadas, Cloudflare, sessões/tokens, consentimento e eventos sem duplicação.
+A fonte de teste verifica apenas se a requisição é autorizada pela CSP: o fixture não
+contém uma fonte válida e não comprova rasterização. As requisições externas são
+interceptadas e respondidas localmente; nada foi enviado ao Google/WhatsApp/Cloudflare.
+
+### Validação manual no Preview
+
+1. Disponibilizar esta configuração somente no Preview, sem publicar Production.
+2. Abrir o alias exato confirmado, autenticar na proteção Vercel se houver e recarregar
+   sem cache. Em Network, conferir uma única CSP no documento, com a lista de debug.
+   A seleção de cabeçalhos pela infraestrutura Vercel precisa desta confirmação real;
+   o helper local testa somente as condições utilizadas, sem emular toda a Vercel.
+3. O modo básico continua sem carregar GTM antes de consentimento. Para depurar as
+   tags, autorizar explicitamente os opcionais e iniciar o Preview do GTM-55MN7ZRV
+   nesse endereço. Recusa não deve ser contornada para estabelecer a conexão.
+4. Conferir badge.css, fonts.googleapis.com/icon e /css sem violações style-src-elem,
+   além de scripts, imagens e fontes da interface. Confirmar conexão no Tag Assistant.
+5. Verificar whatsapp_intent uma vez por interação, qualification_completed após
+   validação e whatsapp_redirect no link final; nenhum lead_qualified automático.
+6. Se a conexão ainda falhar, registrar somente URL/origem e diretiva de qualquer novo
+   bloqueio, sem tokens ou cookies. Conferir bloqueadores, autenticação do Preview,
+   permissões de janelas e avisos de conexão do próprio Tag Assistant. Não ampliar a
+   CSP por tentativa nem remover X-Frame-Options, consentimento ou proteção Vercel.
+
+Os testes comprovam as permissões locais, não o pareamento real do Tag Assistant.
+Não houve deploy, git push, alteração de contêiner ou conversões/configurações externas.

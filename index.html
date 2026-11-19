@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="pt-BR">
   <head>
+    <meta charset="UTF-8" />
     <script>
       // Definidos antes do script assíncrono: callback oficial, sem turnstile.ready().
       window.noisTurnstileState = 'loading';
@@ -17,15 +18,15 @@
 
     <!-- Consentimento básico: define denied antes de poder carregar o GTM. -->
     <script src="./consent.js"></script>
-    <meta charset="UTF-8" />
+    <link rel="canonical" href="https://www.noisdesentupidora.com.br/" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="NÓIS Desentupidora - Serviço de desentupimento 24h. Orçamento grátis e preço justo. Atendemos emergências de esgoto, caixa de gordura, calha e caixa d'água. Ligue ou chame no WhatsApp agora!" />
+    <meta name="description" content="Desentupidora 24 horas na Grande São Paulo. Atendimento residencial, comercial e condominial, com orçamento e visita técnica gratuitos. Fale com a Nóis." />
 
     <!-- Open Graph -->
-    <meta property="og:title" content="NÓIS Desentupidora - Desentupimento 24h Rápido e Garantido" />
-    <meta property="og:description" content="Orçamento grátis e preço justo. Atendimento rápido para desentupimento de esgoto, caixa de gordura, calha e caixa d'água." />
-    <meta property="og:image" content="https://noidesentupidora.com.br/assets/og-image.jpg" />
-    <meta property="og:url" content="https://noidesentupidora.com.br/" />
+    <meta property="og:title" content="Desentupidora 24h na Grande São Paulo | Nóis" />
+    <meta property="og:description" content="Desentupimento, limpeza e manutenção para residências, comércios e condomínios. Orçamento e visita técnica gratuitos, inclusive para atendimento de emergência." />
+    <meta property="og:image" content="https://www.noisdesentupidora.com.br/imagens/logo.png" />
+    <meta property="og:url" content="https://www.noisdesentupidora.com.br/" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="pt_BR" />
 
@@ -37,11 +38,12 @@
       href="./imagens/icone.png"
     />
 
-    <title>NÓIS Desentupidora</title>
+    <title>Desentupidora 24h na Grande São Paulo | Nóis</title>
 
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
     <!-- =========================
          HEADER
          ========================= -->
@@ -51,6 +53,9 @@
           <img src="./imagens/logo.png" alt="NÓIS Desentupidora" />
           <span class="company-name">NÓIS Desentupidora</span>
         </div>
+        <nav class="main-nav" aria-label="Navegação principal">
+          <a href="#servicos">Serviços</a><a href="#atendimento">Quem atendemos</a><a href="#preco">Orçamento</a>
+        </nav>
         <button
           type="button"
           class="whatsapp-header-btn botao-protegido"
@@ -70,186 +75,161 @@
       </div>
     </header>
 
-    <main>
+    <main id="conteudo" tabindex="-1">
       <!-- =========================
              HERO
              ========================= -->
-      <section class="hero fade-in">
+      <section class="hero">
         <div class="hero-content container">
-          <h1 class="hero-title">
-            Desentupimento Rápido 24h<br />sem Quebradeira!
-          </h1>
-          <p class="hero-subtitle">
-            Orçamento Grátis e Preço Justo. Resolvemos sua emergência de
-            encanamento e esgoto rapidinho.
-          </p>
-          <button
+          <div class="hero-copy">
+            <p class="availability"><span aria-hidden="true"></span> Emergências, todos os dias</p>
+            <h1 class="hero-title">Desentupidora 24 horas na Grande São Paulo</h1>
+            <p class="hero-slogan">A solução começa com a Nóis.</p>
+            <p class="hero-subtitle">Desentupimento e limpeza para residências, comércios e condomínios. Atendimento rápido, com orçamento e visita técnica gratuitos.</p>
+            <div class="hero-actions"><button
             type="button"
             class="cta-primary botao-protegido"
             id="botao-whatsapp-hero"
-            aria-label="Chamar no WhatsApp"
+            aria-label="Solicitar pelo WhatsApp"
           >
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path
-                d="M12.01 2.013C6.49 2.013 2 6.503 2 12.023c0 2.03.763 3.91 2.007 5.342l-0.043 3.56 3.63-2.74c1.15.303 2.364.48 3.426.48 5.518 0 9.987-4.49 9.987-9.986 0-2.67-.99-5.093-2.617-6.88C18.082 3.013 15.218 2.013 12.01 2.013z"
-              />
-              <path d="M12 6v6h6l-6-6z" />
-            </svg>
-            Chamar no WhatsApp
+
+            Solicitar pelo WhatsApp
           </button>
+              <a class="phone-link" href="tel:+5511950566792">Ou ligue (11) 95056-6792</a>
+            </div>
+            <p class="hero-note">Explique o que precisa. Nossa equipe orienta o próximo passo.</p>
+          </div>
+          <aside class="hero-brand" aria-label="Atendimento de emergência">
+            <svg class="emergency-symbol" viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="40" cy="40" r="29"/><path d="M40 23v18l12 7M14 15l-6 7M66 15l6 7"/></svg>
+            <div><strong class="emergency-title">Precisou de madrugada?</strong><p>O atendimento continua.<br />Conte com a nossa equipe 24 horas.</p></div>
+            <span class="emergency-caption">Residencial · Comercial · Condomínios</span>
+          </aside>
         </div>
+      </section>
+
+      <section class="benefits-band" aria-label="Condições do atendimento">
+        <ul class="container benefits-list">
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/></svg><span>Atendimento<strong>24 horas</strong></span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h14v18H5zM8 8h8M8 12h8m-8 4h5"/></svg><span>Orçamento e visita técnica<strong>Gratuitos</strong></span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/></svg><span>Parcele em até<strong>3x sem juros</strong></span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 8 3v6c0 5-8 11-8 11S4 16 4 11V5zM8 11l3 3 5-6"/></svg><span>Serviços com garantia<small>Consulte as condições da garantia</small></span></li>
+        </ul>
       </section>
 
       <!-- =========================
              SERVIÇOS
              ========================= -->
-      <section class="section fade-in">
+      <section class="section" id="servicos">
         <div class="container services-header">
-          <h2>Nossos Serviços</h2>
+          <h2>Desentupimento, limpeza<br />e manutenção.</h2>
           <p>
-            Soluções completas para esgoto, caixa de gordura, calha e caixa
-            d'água — rápidos e garantidos.
+            Da obstrução à prevenção, encontre o serviço para o seu imóvel. Nossa equipe orienta você sobre o atendimento.
           </p>
         </div>
 
-        <div class="services-grid container">
-          <article class="service-card" id="servico1">
-            <div class="service-icon">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="32"
-                height="32"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                style="color: #1e3a8a"
-              >
-                <path d="M3 3v18h18"></path>
-                <path d="M9 13l3-3 6 6"></path>
-                <path d="M9 9h6"></path>
-                <path d="M13 5h-2v8H9l6 6"></path>
-              </svg>
-            </div>
-            <h3>Limpeza de Esgoto</h3>
-            <p>
-              Desentupo e limpo canos, ralos e linhas de esgoto entupidos.
-              Atendo a emergências 24h.
-            </p>
-          </article>
-
-          <article class="service-card" id="servico2">
-            <div class="service-icon">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="32"
-                height="32"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                style="color: #1e3a8a"
-              >
-                <path d="M3 12h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                <path d="M8 8V4a4 4 0 0 1 8 0v4"></path>
-                <path d="M3 12l2-6h14l2 6"></path>
-              </svg>
-            </div>
-            <h3>Manutenção de Caixa de Gordura</h3>
-            <p>
-              Limpeza, inspeção e manutenção preventiva de caixas de gordura de
-              restaurantes e condomínios.
-            </p>
-          </article>
-
-          <article class="service-card" id="servico3">
-            <div class="service-icon">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="32"
-                height="32"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                style="color: #1e3a8a"
-              >
-                <path d="M22 12a10 10 0 1 0-10 10v-4a4 4 0 0 1 4-4h2z"></path>
-              </svg>
-            </div>
-            <h3>Limpeza de Calha e Caixa d'Água</h3>
-            <p>
-              Elimino entupimentos em calhas, caixas d'água, tanques e vistorio
-              com câmera.
-            </p>
-          </article>
+        <div class="service-catalog container">
+          <div class="service-group">
+            <h3 class="service-group-title">Desobstrução e limpeza</h3>
+            <article class="service-entry" id="servico1"><h4>Esgoto</h4><p>Desentupimento e limpeza de redes e tubulações de esgoto.</p></article>
+            <article class="service-entry"><h4>Vasos sanitários, pias e ralos</h4><p>Soluções para obstruções em residências e estabelecimentos comerciais.</p></article>
+            <article class="service-entry" id="servico2"><h4>Caixas de gordura</h4><p>Limpeza e manutenção para casas, restaurantes, comércios e condomínios.</p></article>
+            <article class="service-entry" id="servico3"><h4>Calhas e caixas d’água</h4><p>Limpeza e manutenção para cuidar das instalações do seu imóvel.</p></article>
+          </div>
+          <div class="service-group">
+            <h3 class="service-group-title">Diagnóstico e prevenção</h3>
+            <article class="service-entry"><h4>Hidrojateamento</h4><p>Limpeza de tubulações utilizando água sob pressão.</p></article>
+            <article class="service-entry"><h4>Inspeção por câmera</h4><p>Inspeção de tubulações para auxiliar na identificação de problemas e obstruções.</p></article>
+            <article class="service-entry"><h4>Manutenção preventiva</h4><p>Atendimento especialmente voltado a empresas e condomínios.</p></article>
+            <p class="service-guidance">Não sabe qual serviço precisa? Descreva o problema ao solicitar atendimento.</p>
+          </div>
         </div>
       </section>
 
       <!-- =========================
              DIFERENCIAIS / PREÇO
              ========================= -->
-      <section class="section-sm differentials fade-in" id="preco">
-        <div class="container">
-          <h2>Por que escolher a NÓIS Desentupidora?</h2>
-          <p style="max-width: 640px; margin: 0 auto 2rem; opacity: 0.95">
-            Atendimento ágil, preços justos e garantia no serviço. Sua
-            emergência é nossa prioridade!
-          </p>
-
-          <div class="highlights">
-            <div class="highlight-item">
-              <strong>Orçamento sem compromisso</strong>
-              <span style="font-size: 0.8rem"
-                >Receba uma proposta justa em até 30 min.</span
-              >
-            </div>
-            <div class="highlight-item">
-              <strong>Atendimento rápido</strong>
-              <span style="font-size: 0.8rem"
-                >Chegamos em até 45 min. na maioria das ocorrências.</span
-              >
-            </div>
-            <div class="highlight-item">
-              <strong>Preço a partir de</strong>
-              <span style="font-size: 0.8rem"
-                >R$ 149,00 — transparente e sem taxas escondidas.</span
-              >
-            </div>
+      <section class="audience-section section" id="atendimento">
+        <div class="container audience-layout">
+          <div>
+            <h2>Da sua casa à sua empresa.</h2>
+            <p>Cada imóvel tem uma rotina. Nosso atendimento acompanha a necessidade de quem mora, trabalha ou administra o espaço.</p>
           </div>
-
-          <div class="price-cta fade-in">
-            <span class="price-label">A partir de</span>
-            <div class="price-value">R$ 149,00</div>
-            <div class="price-disclaimer">
-              Preço para desentupimento básico. Orçamento grátis e sem
-              compromisso.
-            </div>
-            <button
+          <div class="audience-list">
+            <article><h3>Residências</h3><p>Casas e apartamentos: pias, ralos, vasos sanitários e tubulações. Atendimento também para emergências.</p></article>
+            <article><h3>Comércios e empresas</h3><p>Restaurantes, lojas e empresas: caixas de gordura, redes de esgoto, hidrojateamento e manutenção preventiva. Com emissão de nota fiscal.</p></article>
+            <article><h3>Condomínios</h3><p>Redes coletivas de esgoto, caixas de gordura e tubulações. Inspeção por câmera, manutenção preventiva e atendimento emergencial.</p></article>
+          </div>
+        </div>
+      </section>
+      <section class="section reasons-section" id="diferenciais">
+        <div class="container">
+          <div class="services-header"><h2>Atendimento rápido.<br />Compromisso com você.</h2><p>Da visita técnica gratuita à execução do serviço, converse diretamente com a nossa equipe.</p></div>
+          <div class="highlights">
+            <article class="highlight-item"><h3>Estrutura própria</h3><p>Equipe e veículos próprios para atender residências, comércios e condomínios.</p></article>
+            <article class="highlight-item"><h3>Contratação com clareza</h3><p>Orçamento gratuito, emissão de nota fiscal e pagamento em até 3x sem juros.</p></article>
+            <article class="highlight-item"><h3>Serviços com garantia</h3><p>Consulte as condições da garantia com a equipe, de acordo com o serviço.</p></article>
+          </div>
+        </div>
+      </section>
+      <section class="about-section" id="sobre">
+        <div class="container about-layout">
+          <h2>Conheça a Nóis Desentupidora</h2>
+          <div class="about-copy"><p>A Nóis Desentupidora oferece soluções de desentupimento, limpeza e manutenção para residências, empresas e condomínios na Grande São Paulo.</p><p>Com equipe própria, veículos próprios e atendimento 24 horas, trabalhamos para oferecer agilidade e facilidade na contratação dos nossos serviços.</p></div>
+        </div>
+      </section>
+      <section class="section differentials" id="preco">
+        <div class="container offer-layout">
+          <div>
+            <h2>Cobrimos qualquer orçamento!</h2>
+            <p>Encontrou um preço melhor? Apresente o orçamento da concorrência à nossa equipe. Cobrimos orçamentos de serviços equivalentes.</p>
+          </div>
+          <div class="offer-contact"><button
               type="button"
               class="cta-secondary botao-protegido"
               id="botao-whatsapp-preco"
-              aria-label="Ver preços por WhatsApp"
+              aria-label="Solicitar meu orçamento pelo WhatsApp"
             >
-              <svg
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                aria-hidden="true"
-                width="18"
-                height="18"
-              >
-                <path
-                  d="M12.01 2.013C6.49 2.013 2 6.503 2 12.023c0 2.03.763 3.91 2.007 5.342l-1.08 3.969a1.333 1.333 0 0 0 1.635 1.655l3.63-2.74c1.15.303 2.364.48 3.426.48 5.518 0 9.987-4.49 9.987-9.986 0-2.67-.99-5.093-2.617-6.88C18.082 3.013 15.218 2.013 12.01 2.013z"
-                />
-              </svg>
-              Ver preços por WhatsApp
+
+              Solicitar meu orçamento
             </button>
+            <p>Orçamento e visita técnica gratuitos.<br />Conte à Nóis o que você precisa.</p>
+          </div>
+        </div>
+        <div class="container payment-strip">
+          <div><h3>Facilidade na hora de pagar</h3><p>Parcele em até 3x sem juros.</p></div>
+          <ul class="payment-methods" aria-label="Formas de pagamento">
+            <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 10 10-10 10L2 12zM7 7l5 5 5-5M7 17l5-5 5 5"/></svg>Pix</li>
+            <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 5h20v14H2zM2 9l4-4M18 19l4-4"/><circle cx="12" cy="12" r="3"/></svg>Dinheiro</li>
+            <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/></svg>Cartão de débito</li>
+            <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/></svg>Cartão de crédito</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section coverage-section" id="regioes">
+        <div class="container coverage-layout">
+          <div><h2>Atendimento 24 horas na Grande São Paulo</h2><p>Atendimento de emergência, inclusive durante a madrugada. Informe sua localização à equipe.</p></div>
+          <ul class="coverage-cities" aria-label="Cidades atendidas"><li>São Paulo</li><li>São Bernardo do Campo</li><li>Diadema</li><li>Santo André</li><li>São Caetano do Sul</li></ul>
+        </div>
+      </section>
+
+      <section class="section faq-section" id="duvidas">
+        <div class="container faq-layout">
+          <div><h2>Perguntas frequentes</h2><p>Informações para solicitar seu atendimento com tranquilidade.</p></div>
+          <div class="faq-list">
+            <details><summary>A Nóis Desentupidora atende 24 horas?</summary><p>Sim. Realizamos atendimentos 24 horas, inclusive durante a madrugada.</p></details>
+            <details><summary>Quais regiões são atendidas?</summary><p>Atendemos a Grande São Paulo.</p></details>
+            <details><summary>O orçamento é gratuito?</summary><p>Sim. Solicite seu orçamento gratuitamente.</p></details>
+            <details><summary>A visita técnica é gratuita?</summary><p>Sim. A visita técnica não possui custo.</p></details>
+            <details><summary>Como funciona a cobertura de orçamentos da concorrência?</summary><p>Apresente o orçamento recebido. Cobrimos orçamentos de serviços equivalentes.</p></details>
+            <details><summary>Vocês atendem empresas e condomínios?</summary><p>Sim. Atendemos residências, empresas, comércios e condomínios.</p></details>
+            <details><summary>Quais formas de pagamento são aceitas?</summary><p>Aceitamos Pix, dinheiro, cartão de débito e cartão de crédito.</p></details>
+            <details><summary>É possível parcelar o pagamento?</summary><p>Sim. O pagamento pode ser parcelado em até 3x sem juros.</p></details>
+            <details><summary>Os serviços possuem garantia?</summary><p>Sim. Consulte nossa equipe para conhecer o prazo e as condições da garantia aplicável ao serviço.</p></details>
+            <details><summary>Vocês emitem nota fiscal?</summary><p>Sim. Emitimos nota fiscal.</p></details>
+            <details><summary>Vocês trabalham com hidrojateamento?</summary><p>Sim. Realizamos serviços de hidrojateamento.</p></details>
+            <details><summary>Realizam inspeção por câmera?</summary><p>Sim. Realizamos inspeção de tubulações por câmera.</p></details>
+            <details><summary>Vocês oferecem manutenção preventiva?</summary><p>Sim. Oferecemos manutenção preventiva para empresas e condomínios.</p></details>
           </div>
         </div>
       </section>
@@ -264,9 +244,9 @@
           <h3>NÓIS Desentupidora</h3>
           <div class="contact-info">
             <p>Desentupimento 24h — sua emergência é nossa prioridade!</p>
-            <a href="tel:+5511950566792">📞 (11) 95056-6792</a>
+            <a href="tel:+5511950566792">(11) 95056-6792</a>
             <a href="mailto:noisdesentupidora@gmail.com"
-              >✉ noisdesentupidora@gmail.com</a
+              >noisdesentupidora@gmail.com</a
             >
           </div>
         </div>
@@ -329,9 +309,8 @@
     <div id="cookie-banner" class="cookie-banner" role="dialog" aria-label="Consentimento de cookies">
       <div class="cookie-inner">
         <p class="cookie-text">
-          Cookies opcionais permitem estatísticas, medição de anúncios, uso de dados
-          para publicidade e anúncios personalizados. Você pode aceitar ou recusar;
-          o atendimento funciona sem esses cookies.
+          Cookies opcionais: estatísticas, medição de anúncios e uso de dados para
+          publicidade personalizada. O atendimento funciona sem eles.
           <a href="./termos.html">Política de Privacidade</a>.
         </p>
         <div class="cookie-actions">
@@ -364,20 +343,21 @@
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "PlumberBusiness",
+        "@type": "Plumber",
         "name": "NÓIS Desentupidora",
-        "image": "https://noidesentupidora.com.br/assets/logo.png",
-        "url": "https://noidesentupidora.com.br/",
+        "image": "https://www.noisdesentupidora.com.br/imagens/logo.png",
+        "url": "https://www.noisdesentupidora.com.br/",
         "telephone": "+55-11-95056-6792",
         "contactPoint": {
           "@type": "ContactPoint",
           "telephone": "+55-11-95056-6792",
           "contactType": "customer service",
           "availableLanguage": "Portuguese",
-          "areaServed": "BR"
+          "areaServed": "Grande São Paulo"
         },
         "email": "noisdesentupidora@gmail.com",
         "priceRange": "$$",
+        "paymentAccepted": "Pix, dinheiro, cartão de débito e cartão de crédito",
         "address": {
           "@type": "PostalAddress",
           "streetAddress": "AV Santa Inês, 765",
@@ -407,9 +387,9 @@
             "closes": "23:59"
           }
         ],
-        "serviceArea": {
+        "areaServed": {
           "@type": "AdministrativeArea",
-          "name": "Estado de São Paulo"
+          "name": "Grande São Paulo"
         },
         "hasOfferCatalog": {
           "@type": "OfferCatalog",
@@ -435,6 +415,22 @@
                 "@type": "Service",
                 "name": "Limpeza de Calha e Caixa d'Água"
               }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": { "@type": "Service", "name": "Desentupimento de vasos sanitários, pias e ralos" }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": { "@type": "Service", "name": "Hidrojateamento" }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": { "@type": "Service", "name": "Inspeção por câmera" }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": { "@type": "Service", "name": "Manutenção preventiva" }
             }
           ]
         },
@@ -442,7 +438,7 @@
           "https://www.facebook.com/noidesentupidora",
           "https://www.instagram.com/noidesentupidora"
         ],
-        "description": "NÓIS Desentupidora oferece serviços de desentupimento 24h: limpeza de esgoto, manutenção de caixa de gordura, limpeza de calha e caixa d'água. Orçamento grátis e preço justo."
+        "description": "Desentupimento, limpeza e manutenção 24 horas na Grande São Paulo para residências, comércios e condomínios. Orçamento e visita técnica gratuitos."
       }
     </script>
 

@@ -10,8 +10,8 @@ async function createHttpFunction() {
   const keys = ['TURNSTILE_SECRET_KEY','EXPECTED_HOSTNAME','EXPECTED_HOSTNAMES','ALLOWED_ORIGIN','WHATSAPP_NUMBER','WHATSAPP_MESSAGE_EMOJIS'];
   const saved = Object.fromEntries(keys.map(key => [key,process.env[key]]));
   Object.assign(process.env, {
-    TURNSTILE_SECRET_KEY:'local-http-test-only', EXPECTED_HOSTNAMES:'noidesentupidora.com.br',
-    ALLOWED_ORIGIN:'https://noidesentupidora.com.br', WHATSAPP_NUMBER:'5511950566792',
+    TURNSTILE_SECRET_KEY:'local-http-test-only', EXPECTED_HOSTNAMES:'noisdesentupidora.com.br',
+    ALLOWED_ORIGIN:'https://noisdesentupidora.com.br', WHATSAPP_NUMBER:'5511950566792',
     WHATSAPP_MESSAGE_EMOJIS:'false'
   });
   const state = { success:true, cloudflareStatus:200, verifications:0 };
@@ -24,7 +24,7 @@ async function createHttpFunction() {
       res.writeHead(state.cloudflareStatus,{'Content-Type':'application/json; charset=utf-8'});
       res.end(JSON.stringify({
         success:state.success && form.get('secret')==='local-http-test-only',
-        hostname:'noidesentupidora.com.br',action:'qualification'
+        hostname:'noisdesentupidora.com.br',action:'qualification'
       }), 'utf8');
     } else {
       await handle(req,res);

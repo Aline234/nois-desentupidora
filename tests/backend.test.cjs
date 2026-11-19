@@ -5,7 +5,7 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const path = require('node:path');
 const source = fs.readFileSync(path.join(__dirname, '../api/verify-turnstile.js'), 'utf8');
-const good = { success: true, hostname: 'noidesentupidora.com.br', action: 'qualification' };
+const good = { success: true, hostname: 'noisdesentupidora.com.br', action: 'qualification' };
 const qualification = { service: 'esgoto', neighborhood: 'Centro', urgency: 'hoje' };
 
 function setup({ result = good, httpOK = true, fetchError, jsonError, env = {}, timeout = false } = {}) {
@@ -16,7 +16,7 @@ function setup({ result = good, httpOK = true, fetchError, jsonError, env = {}, 
       encodedMessages.push(value);
       return encodeURIComponent(value);
     },
-    module: { exports: {} }, process: { env: { TURNSTILE_SECRET_KEY: 'test-only', ...env } },
+    module: { exports: {} }, process: { env: { TURNSTILE_SECRET_KEY: 'test-only', EXPECTED_HOSTNAMES: 'noisdesentupidora.com.br', ALLOWED_ORIGIN: 'https://noisdesentupidora.com.br', ...env } },
     console: { log() {}, warn() {}, error() {} }, URLSearchParams, AbortController,
     setTimeout: timeout ? fn => setTimeout(fn, 1) : setTimeout, clearTimeout,
     fetch: async (url, options) => {
@@ -41,7 +41,7 @@ function setup({ result = good, httpOK = true, fetchError, jsonError, env = {}, 
       end() { return this; }
     };
     await sandbox.module.exports({
-      method: 'POST', headers: { origin: 'https://noidesentupidora.com.br', 'x-forwarded-for': '203.0.113.10' },
+      method: 'POST', headers: { origin: 'https://noisdesentupidora.com.br', 'x-forwarded-for': '203.0.113.10' },
       body: { token: 'test-token-12345', qualification }, ...overrides
     }, res);
     return res;
@@ -58,10 +58,10 @@ test('token válido: URL comercial e mensagem codificada, sem cache', async () =
   assert.equal(url.origin, 'https://wa.me');
   assert.match(url.searchParams.get('text'), /Centro/);
   assert.equal(res.headers['Cache-Control'], 'no-store');
-  assert.equal(res.headers['Access-Control-Allow-Origin'], 'https://noidesentupidora.com.br');
+  assert.equal(res.headers['Access-Control-Allow-Origin'], 'https://noisdesentupidora.com.br');
 });
 
-for (const hostname of [undefined, null, '', 123, 'evil.com', 'noidesentupidora.com.br.evil.com', 'evilnoidesentupidora.com.br', 'www.noidesentupidora.com.br', 'https://noidesentupidora.com.br', 'noidesentupidora.com.br/', '.noidesentupidora.com.br', '-bad.noidesentupidora.com.br']) {
+for (const hostname of [undefined, null, '', 123, 'evil.com', 'noisdesentupidora.com.br.evil.com', 'evilnoisdesentupidora.com.br', 'www.noisdesentupidora.com.br', 'https://noisdesentupidora.com.br', 'noisdesentupidora.com.br/', '.noisdesentupidora.com.br', '-bad.noisdesentupidora.com.br']) {
   test('rejeita hostname ' + JSON.stringify(hostname), async () => {
     const res = await setup({ result: { ...good, hostname } }).request();
     assert.equal(res.statusCode, 403);
@@ -78,8 +78,8 @@ for (const action of [undefined, null, '', 'login', 'Qualification', 123]) {
 }
 test('permite apenas hosts explicitamente listados; normaliza maiúsculas DNS', async () => {
   const res = await setup({
-    result: { ...good, hostname: 'WWW.noidesentupidora.com.br' },
-    env: { EXPECTED_HOSTNAMES: 'noidesentupidora.com.br, www.noidesentupidora.com.br' }
+    result: { ...good, hostname: 'WWW.noisdesentupidora.com.br' },
+    env: { EXPECTED_HOSTNAMES: 'noisdesentupidora.com.br, www.noisdesentupidora.com.br' }
   }).request();
   assert.equal(res.statusCode, 200);
 });
@@ -225,4 +225,22 @@ test('modo padrão sem emojis mantém serviço, localização, urgência e UTF-8
   assert.ok(!/[\p{Extended_Pictographic}\uFE0F\uFFFD]/u.test(text));
   assert.equal(api.encodedMessages.length, 1);
   assert.equal(api.encodedMessages[0], text);
+});
+
+for (const hostname of ['www.noisdesentupidora.com.br','noisdesentupidora.com.br','nois-desentupidora.vercel.app']) {
+  test('migração aceita hostname/origem exatos: '+hostname,async()=>{
+    const api=setup({result:{...good,hostname},env:{
+      EXPECTED_HOSTNAMES:'www.noisdesentupidora.com.br,noisdesentupidora.com.br,nois-desentupidora.vercel.app',
+      ALLOWED_ORIGIN:'https://www.noisdesentupidora.com.br,https://noisdesentupidora.com.br,https://nois-desentupidora.vercel.app'
+    }});
+    const res=await api.request({headers:{origin:'https://'+hostname}});
+    assert.equal(res.statusCode,200);
+    assert.equal(res.headers['Access-Control-Allow-Origin'],'https://'+hostname);
+  });
+}
+test('migração rejeita domínio parecido e origem fora da configuração',async()=>{
+  const env={EXPECTED_HOSTNAMES:'www.noisdesentupidora.com.br',ALLOWED_ORIGIN:'https://www.noisdesentupidora.com.br'};
+  const api=setup({result:{...good,hostname:'www.noisdesentupidora.com.br.evil.com'},env});
+  assert.equal((await api.request({headers:{origin:'https://www.noisdesentupidora.com.br'}})).statusCode,403);
+  assert.equal((await api.request({headers:{origin:'https://nois-desentupidora.vercel.app'}})).statusCode,403);
 });

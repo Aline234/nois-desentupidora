@@ -81,7 +81,7 @@ function validateQualification(qualification) {
 
 module.exports = async function handler(req, res) {
   // CORS é política de navegador, não autenticação. Todo POST exige Turnstile.
-  const origins = (process.env.ALLOWED_ORIGIN || 'https://noidesentupidora.com.br')
+  const origins = (process.env.ALLOWED_ORIGIN || 'https://www.noisdesentupidora.com.br,https://noisdesentupidora.com.br,https://nois-desentupidora.vercel.app')
     .split(',').map(value => value.trim()).filter(Boolean);
   const origin = req.headers.origin;
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
@@ -179,7 +179,7 @@ module.exports = async function handler(req, res) {
     }
 
     // Sucesso, hostname exato e action são todos obrigatórios.
-    const allowedHostnames = (process.env.EXPECTED_HOSTNAMES || process.env.EXPECTED_HOSTNAME || 'noidesentupidora.com.br')
+    const allowedHostnames = (process.env.EXPECTED_HOSTNAMES || process.env.EXPECTED_HOSTNAME || 'www.noisdesentupidora.com.br,noisdesentupidora.com.br,nois-desentupidora.vercel.app')
       .split(',').map(value => value.trim().toLowerCase()).filter(Boolean);
     const hostname = turnstileData.hostname;
     const validHostname = typeof hostname === 'string'
